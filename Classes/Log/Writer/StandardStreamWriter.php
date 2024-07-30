@@ -37,7 +37,7 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  */
 final class StandardStreamWriter extends AbstractWriter
 {
-    private StandardStream $stdStream;
+    private readonly StandardStream $stdStream;
 
     /**
      * @param array{stdStream: StandardStream} $options
