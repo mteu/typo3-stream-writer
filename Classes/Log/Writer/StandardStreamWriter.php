@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Mteu\StreamWriter\Log\Writer;
 
-use Mteu\StreamWriter\Log\Config\StreamOption;
+use Mteu\StreamWriter\Log\Config\StandardStream;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
@@ -35,40 +35,42 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class StreamWriter extends AbstractWriter
+final class StandardStreamWriter extends AbstractWriter
 {
-    private StreamOption $streamOption;
+    private StandardStream $stdStream;
+
     /**
-     * @param array{stream: StreamOption} $options
+     * @param array{stdStream: StandardStream} $options
      * @throws InvalidLogWriterConfigurationException
      */
-    public function __construct(array $options = ['stream' => StreamOption::StdErr])
+    public function __construct(array $options = ['stdStream' => StandardStream::Err])
     {
         parent::__construct($options);
-        $this->streamOption = $options['stream'];
+        $this->stdStream = $options['stdStream'];
     }
 
     public function writeLog(LogRecord $record): WriterInterface
     {
-        $resource = @fopen($this->streamOption->value, 'w');
+        $resource = fopen($this->stdStream->value, 'w');
 
-        if (false === $resource) {
-            throw new \RuntimeException('Unable to write to ' .  $this->streamOption->value . '.', 1722331957);
+        if ($resource === false) {
+            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331957);
         }
 
-        $output = fputs(
+        $output = fwrite(
             $resource,
             trim(
                 sprintf(
-                    '%s: %s',
+                    '[%s] %s: %s',
+                    $record->getLevel(),
                     $record->getComponent(),
                     $record->getMessage(),
                 ),
             ) . PHP_EOL,
         );
 
-        if (false === $output) {
-            throw new \RuntimeException('Unable to write to ' .  $this->streamOption->value . '.', 1722331958);
+        if ($output === false) {
+            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331958);
         }
 
         return $this;

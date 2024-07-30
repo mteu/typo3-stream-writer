@@ -7,8 +7,8 @@ Add logging capabilities to `stdout` and `stderr`.
 
 'writerConfiguration' => [
     [
-        Mteu\StreamWriter\Log\Writer\StreamWriter::class => [
-            'stream' => Mteu\StreamWriter\Log\Config\StreamOption::StdErr,
+        Mteu\StreamWriter\Log\Writer\StandardStreamWriter::class => [
+            'stream' => Mteu\StreamWriter\Log\Config\StandardStream::StdErr,
         ],
     ],
 ],

@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * This file is part of the TYPO3 CMS extension "mteu/typo3-stream-writer".
+ * This file is part of the TYPO3 CMS extensions "mteu/typo3-stream-writer".
  *
  * Copyright (C) 2024 Martin Adler <mteu@mailbox.org>
  *
@@ -19,20 +21,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** @noinspection PhpUndefinedVariableInspection */
-$EM_CONF[$_EXTKEY] = [
-    'title' => 'Stream Writer',
-    'description' => 'This extension adds the possibility to log to `stdout` and `stderr`.',
-    'category' => 'be',
-    'version' => '0.1.0',
-    'state' => 'beta',
-    'clearCacheOnLoad' => true,
-    'author' => 'Martin Adler',
-    'author_email' => 'mteu@mailbox.org',
-    'constraints' => [
-        'depends' => [
-            'typo3' => '12.4.0-13.2.99',
-            'php' => '8.1.0-8.3.99',
-        ],
-    ],
-];
+namespace Mteu\StreamWriter\Log\Config;
+
+/**
+ * StreamOption.
+ *
+ * @author Martin Adler <martin.adler@init.de>
+ * @license GPL-3.0-or-later
+ */
+enum StandardStream: string
+{
+    case Out = 'php://stdout';
+    case Err = 'php://stderr';
+}
