@@ -1,8 +1,23 @@
+<div align="center">
+
 # TYPO3 Stream Writer
-Add logging capabilities to `stdout` and `stderr`.
+
+</div>
+This TYPO3 CMS extensions adds a custom `LogWriter` to the TYPO3 Logging Framework allowing the CMS to log messages to
+`php://stdout` or `php://stderr`.
+
+## ⚡️ Quickstart
+
+### Installation
+```bash
+composer require mteu/typo3-stream-writer
+```
+
+### Usage
+Configure your extension or TYPO3 instance to use the new writer.
 
 ```php
-# ext_localconf.php
+# config/system/additional.php | typo3conf/system/additional.php
 
 <?php
 
@@ -14,14 +29,18 @@ use Mteu\StreamWriter\Log\Writer\StandardStreamWriter;
 
 defined('TYPO3') or die();
 
-$GLOBALS['TYPO3_CONF_VARS']['LOG']['MyVendor']['MyExtension']['MyClass']['writerConfiguration'] = [
-    // Configuration for ERROR level log entries
-    LogLevel::ERROR => [
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
+    \Psr\Log\LogLevel::ERROR => [
         StandardStreamWriter::class => [
-            'stdStream' => Mteu\StreamWriter\Log\Config\StandardStream::Error,
+            'outputStream' => Mteu\StreamWriter\Log\Config\StandardStream::Error,
+        ],
+    ],
+    \Psr\Log\LogLevel::WARNING => [
+        StandardStreamWriter::class => [
+            'outputStream' => Mteu\StreamWriter\Log\Config\StandardStream::Out,
         ],
     ],
 ];
-
-# ...
 ```
+## ⭐ License
+This project is licensed under [GNU General Public License 3.0 (or later)](LICENSE).

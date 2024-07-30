@@ -37,24 +37,24 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  */
 final class StandardStreamWriter extends AbstractWriter
 {
-    private readonly StandardStream $stdStream;
+    private readonly StandardStream $outputStream;
 
     /**
-     * @param array{stdStream: StandardStream} $options
+     * @param array{outputStream: StandardStream} $options
      * @throws InvalidLogWriterConfigurationException
      */
-    public function __construct(array $options = ['stdStream' => StandardStream::Error])
+    public function __construct(array $options = ['outputStream' => StandardStream::Error])
     {
         parent::__construct($options);
-        $this->stdStream = $options['stdStream'];
+        $this->outputStream = $options['outputStream'];
     }
 
     public function writeLog(LogRecord $record): WriterInterface
     {
-        $resource = fopen($this->stdStream->value, 'w');
+        $resource = fopen($this->outputStream->value, 'w');
 
         if ($resource === false) {
-            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331957);
+            throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331957);
         }
 
         $output = fwrite(
@@ -70,7 +70,7 @@ final class StandardStreamWriter extends AbstractWriter
         );
 
         if ($output === false) {
-            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331958);
+            throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331958);
         }
 
         return $this;
