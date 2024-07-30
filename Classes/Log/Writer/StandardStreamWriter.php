@@ -43,7 +43,7 @@ final class StandardStreamWriter extends AbstractWriter
      * @param array{stdStream: StandardStream} $options
      * @throws InvalidLogWriterConfigurationException
      */
-    public function __construct(array $options = ['stdStream' => StandardStream::Err])
+    public function __construct(array $options = ['stdStream' => StandardStream::Error])
     {
         parent::__construct($options);
         $this->stdStream = $options['stdStream'];

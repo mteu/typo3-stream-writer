@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace Mteu\StreamWriter\Log\Config;
 
 /**
- * StreamOption.
+ * StandardStream.
  *
- * @author Martin Adler <martin.adler@init.de>
+ * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
 enum StandardStream: string
 {
     case Out = 'php://stdout';
-    case Err = 'php://stderr';
+    case Error = 'php://stderr';
 }

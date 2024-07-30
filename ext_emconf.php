@@ -21,11 +21,11 @@
 
 /** @noinspection PhpUndefinedVariableInspection */
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Stream Writer',
+    'title' => 'TYPO3 Stream Writer',
     'description' => 'This extension adds the possibility to log to `stdout` and `stderr`.',
     'category' => 'be',
     'version' => '0.1.0',
-    'state' => 'beta',
+    'state' => 'alpha',
     'clearCacheOnLoad' => true,
     'author' => 'Martin Adler',
     'author_email' => 'mteu@mailbox.org',
