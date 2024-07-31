@@ -37,6 +37,8 @@ $configuration['parameters']['paths'] = [
     'Tests',
 ];
 
+$configuration['parameters']['treatPhpDocTypesAsCertain'] = false;
+
 $configuration['parameters']['docblock'] = [
     'copyrightIdentifier' => 'Copyright (C) ',
     'requiredLicenseIdentifier' => 'GPL-3.0',
@@ -48,6 +50,10 @@ $configuration['parameters']['ergebnis'] = [
             \TYPO3\CMS\Core\Log\Writer\AbstractWriter::class,
         ],
     ],
+];
+
+$ignoreErrors = [
+    '#^Parameter \\#1 \\$options of method Mteu\\\\StreamWriter\\\\Tests\\\\Unit\\\\Log\\\\Writer\\\\StandardStreamWriterTest\\:\\:createWriter\\(\\) expects array\\{outputStream\\: mixed\\}\\|null, array\\{\\} given\\.$#',
 ];
 
 if (count($configuration['parameters']['ignoreErrors']) > 0) {

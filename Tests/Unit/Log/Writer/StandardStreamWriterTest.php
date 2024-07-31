@@ -42,12 +42,12 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
 final class StandardStreamWriterTest extends Framework\TestCase
 {
     /**
-     * @param null|array{outputStream: mixed} $options
+     * @param array{outputStream: mixed}|null $options
      * @throws InvalidLogWriterConfigurationException
      */
     private function createWriter(array $options = null): Src\Log\Writer\StandardStreamWriter
     {
-        if (null === $options) {
+        if ($options === null) {
             return new Src\Log\Writer\StandardStreamWriter();
         }
 
@@ -60,8 +60,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
     private function captureOutputBufferForLogWrite(
         WriterInterface $writer,
         LogRecord $record,
-    ): string|false
-    {
+    ): string|false {
         ob_start();
         $writer->writeLog($record);
 
@@ -99,21 +98,24 @@ final class StandardStreamWriterTest extends Framework\TestCase
         $this->createWriter(['outputStream' => null]);
     }
 
-    // #[Test]
-    public function writeLogSucceedsInWritingErrorsToStdErr(): void
-    {
-        $output = $this->captureOutputBufferForLogWrite(
-            $this->createWriter(),
-            new LogRecord(
-                'Foo',
-                LogLevel::ERROR,
-                'Bar',
-            ),
-        );
-
-        self::assertEquals(
-            '[Error] - Foo: Bar',
-            $output
-        );
-    }
+    //    #[Test]
+    //    public function writeLogSucceedsInWritingErrorsToStdErr(): void
+    //    {
+    //        $output = $this->captureOutputBufferForLogWrite(
+    //            $this->createWriter(),
+    //            new LogRecord(
+    //                'Foo',
+    //                LogLevel::ERROR,
+    //                'Bar',
+    //            ),
+    //        );
+    //
+    //        var_dump($output);
+    //        die();
+    //
+    //        self::assertEquals(
+    //            '[Error] - Foo: Bar',
+    //            $output
+    //        );
+    //    }
 }
