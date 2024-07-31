@@ -34,6 +34,11 @@
 			"Mteu\\StreamWriter\\": "Classes/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Mteu\\StreamWriter\\Tests\\": "Tests/"
+		}
+	},
 	"config": {
 		"allow-plugins": {
 			"ergebnis/composer-normalize": true,
