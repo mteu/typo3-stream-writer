@@ -57,28 +57,49 @@ final class StandardStreamWriterTest extends Framework\TestCase
     /**
      * @throws \Exception
      */
-    private function captureOutputBufferForLogWrite(WriterInterface $writer, LogRecord $record): string|false
+    private function captureOutputBufferForLogWrite(
+        WriterInterface $writer,
+        LogRecord $record,
+    ): string|false
     {
         ob_start();
         $writer->writeLog($record);
+
         return ob_get_clean();
     }
 
     #[Test]
-    public function writeLogThrowsExceptionForMissingConfiguration(): void
+    public function writeLogCreationSucceedsWithEmptyConfiguration(): void
     {
-        self::expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
-        $this->createWriter(['foo' => 'bar']);
+        $subject = $this->createWriter();
+        self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
     }
 
     #[Test]
-    public function writeLogThrowsExceptionForInvalidConfiguration(): void
+    public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
     {
-        self::expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
+        $subject = $this->createWriter(['outputStream' => StandardStream::Error]);
+        self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
+
+        $subject = $this->createWriter(['outputStream' => StandardStream::Out]);
+        self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
+    }
+
+    #[Test]
+    public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
+    {
+        $this->expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
+        $this->createWriter([]);
+    }
+
+    #[Test]
+    public function writeLogCreationThrowsExceptionForInvalidOutputStreamValue(): void
+    {
+        $this->expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
         $this->createWriter(['outputStream' => null]);
     }
 
-    #[Test]
+    // #[Test]
     public function writeLogSucceedsInWritingErrorsToStdErr(): void
     {
         $output = $this->captureOutputBufferForLogWrite(

@@ -45,7 +45,12 @@ final class StandardStreamWriter extends AbstractWriter
      */
     public function __construct(array $options = ['outputStream' => StandardStream::Error])
     {
-        parent::__construct($options);
+        parent::__construct();
+
+        if (!$options['outputStream'] instanceof StandardStream) {
+            throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
+        }
+
         $this->outputStream = $options['outputStream'];
     }
 
