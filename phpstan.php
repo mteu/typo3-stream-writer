@@ -52,9 +52,7 @@ $configuration['parameters']['ergebnis'] = [
     ],
 ];
 
-$ignoreErrors = [
-    '#^Parameter \\#1 \\$options of method Mteu\\\\StreamWriter\\\\Tests\\\\Unit\\\\Log\\\\Writer\\\\StandardStreamWriterTest\\:\\:createWriter\\(\\) expects array\\{outputStream\\: mixed\\}\\|null, array\\{\\} given\\.$#',
-];
+$ignoreErrors = [];
 
 if (count($configuration['parameters']['ignoreErrors']) > 0) {
     foreach ($configuration['parameters']['ignoreErrors'] as $baselineIgnore) {

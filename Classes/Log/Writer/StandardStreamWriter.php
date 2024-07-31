@@ -21,9 +21,9 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Mteu\StreamWriter\Log\Writer;
+namespace mteu\StreamWriter\Log\Writer;
 
-use Mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter\Log\Config\StandardStream;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
@@ -64,14 +64,12 @@ final class StandardStreamWriter extends AbstractWriter
 
         $output = fwrite(
             $resource,
-            trim(
-                sprintf(
-                    '[%s] %s: %s',
-                    $record->getLevel(),
-                    $record->getComponent(),
-                    $record->getMessage(),
-                ),
-            ) . PHP_EOL,
+            sprintf(
+                '[%s] %s: %s' . PHP_EOL,
+                $record->getLevel(),
+                $record->getComponent(),
+                $record->getMessage(),
+            ),
         );
 
         if ($output === false) {

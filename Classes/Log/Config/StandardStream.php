@@ -21,7 +21,7 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Mteu\StreamWriter\Log\Config;
+namespace mteu\StreamWriter\Log\Config;
 
 /**
  * StandardStream.

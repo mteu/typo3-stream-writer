@@ -21,13 +21,12 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Mteu\StreamWriter\Tests\Unit\Log\Writer;
+namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
 
-use Mteu\StreamWriter as Src;
-use Mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter as Src;
+use mteu\StreamWriter\Log\Config\StandardStream;
 use PHPUnit\Framework;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;
@@ -44,6 +43,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
     /**
      * @param array{outputStream: mixed}|null $options
      * @throws InvalidLogWriterConfigurationException
+     * @phpstan-ignore-next-line
      */
     private function createWriter(array $options = null): Src\Log\Writer\StandardStreamWriter
     {
@@ -51,11 +51,13 @@ final class StandardStreamWriterTest extends Framework\TestCase
             return new Src\Log\Writer\StandardStreamWriter();
         }
 
+        /** @phpstan-ignore argument.type */
         return new Src\Log\Writer\StandardStreamWriter($options);
     }
 
     /**
      * @throws \Exception
+     * @phpstan-ignore method.unused
      */
     private function captureOutputBufferForLogWrite(
         WriterInterface $writer,
@@ -71,23 +73,27 @@ final class StandardStreamWriterTest extends Framework\TestCase
     public function writeLogCreationSucceedsWithEmptyConfiguration(): void
     {
         $subject = $this->createWriter();
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
         self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
     }
 
     #[Test]
     public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
     {
-        $subject = $this->createWriter(['outputStream' => StandardStream::Error]);
-        self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
-
-        $subject = $this->createWriter(['outputStream' => StandardStream::Out]);
-        self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
+        foreach (StandardStream::cases() as $standardStream) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+            self::assertInstanceOf(
+                Src\Log\Writer\StandardStreamWriter::class,
+                $this->createWriter(['outputStream' => $standardStream])
+            );
+        }
     }
 
     #[Test]
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
         $this->expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
+        /** @phpstan-ignore argument.type */
         $this->createWriter([]);
     }
 
