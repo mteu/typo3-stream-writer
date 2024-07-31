@@ -21,9 +21,9 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Mteu\StreamWriter\Log\Writer;
+namespace mteu\StreamWriter\Log\Writer;
 
-use Mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter\Log\Config\StandardStream;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
@@ -37,40 +37,43 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  */
 final class StandardStreamWriter extends AbstractWriter
 {
-    private StandardStream $stdStream;
+    private readonly StandardStream $outputStream;
 
     /**
-     * @param array{stdStream: StandardStream} $options
+     * @param array{outputStream: StandardStream} $options
      * @throws InvalidLogWriterConfigurationException
      */
-    public function __construct(array $options = ['stdStream' => StandardStream::Err])
+    public function __construct(array $options = ['outputStream' => StandardStream::Error])
     {
-        parent::__construct($options);
-        $this->stdStream = $options['stdStream'];
+        parent::__construct();
+
+        if (!$options['outputStream'] instanceof StandardStream) {
+            throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
+        }
+
+        $this->outputStream = $options['outputStream'];
     }
 
     public function writeLog(LogRecord $record): WriterInterface
     {
-        $resource = fopen($this->stdStream->value, 'w');
+        $resource = fopen($this->outputStream->value, 'w');
 
         if ($resource === false) {
-            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331957);
+            throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331957);
         }
 
         $output = fwrite(
             $resource,
-            trim(
-                sprintf(
-                    '[%s] %s: %s',
-                    $record->getLevel(),
-                    $record->getComponent(),
-                    $record->getMessage(),
-                ),
-            ) . PHP_EOL,
+            sprintf(
+                '[%s] %s: %s' . PHP_EOL,
+                $record->getLevel(),
+                $record->getComponent(),
+                $record->getMessage(),
+            ),
         );
 
         if ($output === false) {
-            throw new \RuntimeException('Unable to write to ' . $this->stdStream->value . '.', 1722331958);
+            throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331958);
         }
 
         return $this;

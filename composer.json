@@ -31,7 +31,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Mteu\\StreamWriter\\": "Classes/"
+			"mteu\\StreamWriter\\": "Classes/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"mteu\\StreamWriter\\Tests\\": "Tests/"
 		}
 	},
 	"config": {

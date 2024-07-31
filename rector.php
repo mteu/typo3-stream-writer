@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the TYPO3 CMS extensions "mteu/typo3-stream-writer".
+ * This file is part of the TYPO3 CMS extension "mteu/typo3-stream-writer".
  *
  * Copyright (C) 2024 Martin Adler <mteu@mailbox.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,16 +21,22 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Config;
+use Rector\Config\RectorConfig;
+use Rector\Set\ValueObject\LevelSetList;
+use Rector\ValueObject\PhpVersion;
+use Ssch\TYPO3Rector\Set\Typo3LevelSetList;
 
-/**
- * StandardStream.
- *
- * @author Martin Adler <mteu@mailbox.org>
- * @license GPL-3.0-or-later
- */
-enum StandardStream: string
-{
-    case Out = 'php://stdout';
-    case Error = 'php://stderr';
-}
+return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->paths([
+        __DIR__ . '/Classes',
+        __DIR__ . '/Configuration',
+        __DIR__ . '/Tests',
+    ]);
+
+    $rectorConfig->phpVersion(PhpVersion::PHP_81);
+
+    $rectorConfig->sets([
+        LevelSetList::UP_TO_PHP_81,
+        Typo3LevelSetList::UP_TO_TYPO3_12,
+    ]);
+};
