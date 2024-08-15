@@ -35,7 +35,7 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class StandardStreamWriter extends AbstractWriter
+final class StreamWriter extends AbstractWriter
 {
     private readonly StandardStream $outputStream;
 
@@ -81,12 +81,7 @@ final class StandardStreamWriter extends AbstractWriter
         $output = fwrite(
             $resource,
             // why custom format when  LogRecord is stringable
-            sprintf(
-                '[%s] %s: %s' . PHP_EOL,
-                strtoupper($record->getLevel()),
-                $record->getComponent(),
-                $record->getMessage(),
-            ),
+            $this->displayLogMessage($record),
         );
 
         if ($output === false) {
@@ -94,5 +89,15 @@ final class StandardStreamWriter extends AbstractWriter
         }
 
         return $this;
+    }
+
+    private function displayLogMessage(LogRecord $record): string
+    {
+        return sprintf(
+            '[%s] %s: %s' . PHP_EOL,
+            strtoupper($record->getLevel()),
+            $record->getComponent(),
+            $record->getMessage(),
+        );
     }
 }

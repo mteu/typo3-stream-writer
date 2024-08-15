@@ -35,19 +35,21 @@ declare(strict_types=1);
 
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Log\LogLevel;
-use mteu\StreamWriter\Log\Writer\StandardStreamWriter;
+use mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter\Log\Writer\StreamWriter;
+
 
 defined('TYPO3') or die();
 
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
     \Psr\Log\LogLevel::ERROR => [
-        StandardStreamWriter::class => [
-            'outputStream' => mteu\StreamWriter\Log\Config\StandardStream::Error,
+        StreamWriter::class => [
+            'outputStream' => StandardStream::Error,
         ],
     ],
     \Psr\Log\LogLevel::WARNING => [
-        StandardStreamWriter::class => [
-            'outputStream' => mteu\StreamWriter\Log\Config\StandardStream::Out,
+        StreamWriter::class => [
+            'outputStream' => StandardStream::Out,
         ],
     ],
 ];
