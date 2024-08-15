@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 $configuration = [
     'parameters' => [
-        'ignoreErrors' => [],
+        'ignoreErrors' => require 'phpstan-baseline.php',
     ],
 ];
 
-$configuration = require 'phpstan-baseline.php';
 
 $configuration['parameters']['level'] = 'max';
 
