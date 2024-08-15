@@ -64,7 +64,7 @@ jobs:
 
       # Run Unit tests
       - name: Build coverage directory
-        run: mkdir -p .build/coverage
+        run: mkdir -p .Build/coverage
       - name: Run Unit tests with coverage
         run: composer test:coverage
 
@@ -73,6 +73,6 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: .build/coverage
+          directory: .Build/coverage
           fail_ci_if_error: true
-          verbose: true^
+          verbose: true

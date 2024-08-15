@@ -1,5 +1,8 @@
 <div align="center">
 
+[![codecov](https://codecov.io/gh/mteu/typo3-stream-writer/graph/badge.svg?token=XIx5ikuAYF)](https://codecov.io/gh/mteu/typo3-stream-writer)
+[![Coverage Status](https://coveralls.io/repos/github/mteu/typo3-stream-writer/badge.svg)](https://coveralls.io/github/mteu/typo3-stream-writer)
+
 # TYPO3 Stream Writer
 
 </div>
