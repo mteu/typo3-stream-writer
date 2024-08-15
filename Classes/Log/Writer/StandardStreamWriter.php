@@ -83,7 +83,7 @@ final class StandardStreamWriter extends AbstractWriter
             // why custom format when  LogRecord is stringable
             sprintf(
                 '[%s] %s: %s' . PHP_EOL,
-                $record->getLevel(),
+                strtoupper($record->getLevel()),
                 $record->getComponent(),
                 $record->getMessage(),
             ),

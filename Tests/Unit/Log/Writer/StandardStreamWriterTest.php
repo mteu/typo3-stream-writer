@@ -27,10 +27,9 @@ use mteu\StreamWriter as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StandardStreamWriter;
 use PHPUnit\Framework;
-use PHPUnit\Framework\Attributes\Test;
+use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
-use TYPO3\CMS\Core\Log\Writer\WriterInterface;
 
 /**
  * StandardStreamWriterTest.
@@ -61,16 +60,19 @@ final class StandardStreamWriterTest extends Framework\TestCase
      * @phpstan-ignore method.unused
      */
     private function captureOutputBufferForLogWrite(
-        WriterInterface $writer,
+        StandardStream $stream,
         LogRecord $record,
     ): string|false {
+
+        $logWriter = $this->createWriter(['outputStream' => $stream]);
+
         ob_start();
-        $writer->writeLog($record);
+        $logWriter->writeLog($record);
 
         return ob_get_clean();
     }
 
-    #[Test]
+    #[Framework\Attributes\Test]
     public function writeLogCreationSucceedsWithEmptyConfiguration(): void
     {
         $subject = $this->createWriter();
@@ -78,7 +80,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
         self::assertInstanceOf(Src\Log\Writer\StandardStreamWriter::class, $subject);
     }
 
-    #[Test]
+    #[Framework\Attributes\Test]
     public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
     {
         foreach (StandardStream::cases() as $standardStream) {
@@ -90,7 +92,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
         }
     }
 
-    #[Test]
+    #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
@@ -98,7 +100,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
         $this->createWriter(['foo']);
     }
 
-    #[Test]
+    #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForUnsetOutputStreamValue(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
@@ -106,7 +108,7 @@ final class StandardStreamWriterTest extends Framework\TestCase
         $this->createWriter(['outputStream' => null]);
     }
 
-    #[Test]
+    #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForEmptyOutputStreamValue(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
@@ -114,24 +116,110 @@ final class StandardStreamWriterTest extends Framework\TestCase
         $this->createWriter(['outputStream' => '']);
     }
 
-    //    #[Test]
-    //    public function writeLogSucceedsInWritingErrorsToStdErr(): void
-    //    {
-    //        $output = $this->captureOutputBufferForLogWrite(
-    //            $this->createWriter(),
-    //            new LogRecord(
-    //                'Foo',
-    //                LogLevel::ERROR,
-    //                'Bar',
-    //            ),
-    //        );
-    //
-    //        var_dump($output);
-    //        die();
-    //
-    //        self::assertEquals(
-    //            '[Error] - Foo: Bar',
-    //            $output
-    //        );
-    //    }
+    /**
+     * @throws \Exception
+     */
+    #[Framework\Attributes\Test]
+    #[Framework\Attributes\DataProvider('writeLogProvokesMatchingStreamOutputForLogLevels')]
+    public function writeLogSucceedsInWritingErrorsToStdErr(
+        StandardStream $stream,
+        LogRecord $record,
+        string $expected,
+    ): void {
+        $output = $this->captureOutputBufferForLogWrite(
+            $stream,
+            $record,
+        );
+
+        self::assertEquals(
+            $expected,
+            $output
+        );
+    }
+
+    /**
+     * @return \Generator<string, StandardStream, array{LogRecord, string}>
+     */
+    public static function writeLogProvokesMatchingStreamOutputForLogLevels(): \Generator
+    {
+        yield 'emergency' => [
+            StandardStream::Error,
+            new LogRecord(
+                'EmergencyComponent',
+                LogLevel::EMERGENCY,
+                'EmergencyMessage',
+            ),
+            '[EMERGENCY] EmergencyComponent: EmergencyMessage',
+        ];
+
+        yield 'alert' => [
+            StandardStream::Error,
+            new LogRecord(
+                'AlertComponent',
+                LogLevel::ALERT,
+                'AlertMessage',
+            ),
+            '[ALERT] AlertComponent: AlertMessage',
+        ];
+
+        yield 'critical' => [
+            StandardStream::Error,
+            new LogRecord(
+                'CriticalComponent',
+                LogLevel::CRITICAL,
+                'CriticalMessage',
+            ),
+            '[CRITICAL] AlertComponent: CriticalMessage',
+        ];
+
+        yield 'error' => [
+            StandardStream::Error,
+            new LogRecord(
+                'ErrorComponent',
+                LogLevel::ERROR,
+                'ErrorMessage',
+            ),
+            '[ERROR] ErrorComponent: ErrorMessage',
+        ];
+
+        yield 'warning' => [
+            StandardStream::Out,
+            new LogRecord(
+                'warningComponent',
+                LogLevel::WARNING,
+                'warningMessage',
+            ),
+            '[WARNING] WarningComponent: WarningMessage',
+        ];
+
+        yield 'notice' => [
+            StandardStream::Out,
+            new LogRecord(
+                'NoticeComponent',
+                LogLevel::NOTICE,
+                'NoticeMessage',
+            ),
+            '[NOTICE] NoticeComponent: NoticeMessage',
+        ];
+
+        yield 'info' => [
+            StandardStream::Out,
+            new LogRecord(
+                'InfoComponent',
+                LogLevel::INFO,
+                'InfoMessage',
+            ),
+            '[INFO] InfoComponent: InfoMessage',
+        ];
+
+        yield 'debug' => [
+            StandardStream::Out,
+            new LogRecord(
+                'DebugComponent',
+                LogLevel::DEBUG,
+                'DebugMessage',
+            ),
+            '[DEBUG] DebugComponent: DebugMessage',
+        ];
+    }
 }
