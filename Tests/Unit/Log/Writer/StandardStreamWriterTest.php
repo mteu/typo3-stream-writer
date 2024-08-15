@@ -25,6 +25,7 @@ namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
 
 use mteu\StreamWriter as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter\Log\Writer\StandardStreamWriter;
 use PHPUnit\Framework;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
@@ -41,13 +42,13 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
 final class StandardStreamWriterTest extends Framework\TestCase
 {
     /**
-     * @param array{outputStream: mixed}|null $options
+     * @param mixed[] $options
+     * @return StandardStreamWriter
      * @throws InvalidLogWriterConfigurationException
-     * @phpstan-ignore-next-line
      */
-    private function createWriter(array $options = null): Src\Log\Writer\StandardStreamWriter
+    private function createWriter(array $options = []): Src\Log\Writer\StandardStreamWriter
     {
-        if ($options === null) {
+        if ($options === []) {
             return new Src\Log\Writer\StandardStreamWriter();
         }
 
@@ -92,16 +93,25 @@ final class StandardStreamWriterTest extends Framework\TestCase
     #[Test]
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
-        $this->expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
-        /** @phpstan-ignore argument.type */
-        $this->createWriter([]);
+        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StandardStreamWriter');
+        $this->createWriter(['foo']);
     }
 
     #[Test]
-    public function writeLogCreationThrowsExceptionForInvalidOutputStreamValue(): void
+    public function writeLogCreationThrowsExceptionForUnsetOutputStreamValue(): void
     {
-        $this->expectException(\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StandardStreamWriter"');
         $this->createWriter(['outputStream' => null]);
+    }
+
+    #[Test]
+    public function writeLogCreationThrowsExceptionForEmptyOutputStreamValue(): void
+    {
+        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StandardStreamWriter"');
+        $this->createWriter(['outputStream' => '']);
     }
 
     //    #[Test]

@@ -47,11 +47,27 @@ final class StandardStreamWriter extends AbstractWriter
     {
         parent::__construct();
 
+        $this->outputStream = $this->validateWriterOptions($options);
+    }
+
+    /**
+     * @param mixed[] $options
+     * @throws InvalidLogWriterConfigurationException
+     */
+    private function validateWriterOptions(array $options): StandardStream
+    {
+        if (!array_key_exists('outputStream', $options) ||
+            $options['outputStream'] === '' ||
+            $options['outputStream'] === null
+        ) {
+            throw new InvalidLogWriterConfigurationException('Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"', 1722422118);
+        }
+
         if (!$options['outputStream'] instanceof StandardStream) {
             throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
         }
 
-        $this->outputStream = $options['outputStream'];
+        return $options['outputStream'];
     }
 
     public function writeLog(LogRecord $record): WriterInterface
@@ -64,6 +80,7 @@ final class StandardStreamWriter extends AbstractWriter
 
         $output = fwrite(
             $resource,
+            // why custom format when  LogRecord is stringable
             sprintf(
                 '[%s] %s: %s' . PHP_EOL,
                 $record->getLevel(),

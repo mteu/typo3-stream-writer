@@ -1,0 +1,10 @@
+extensions:
+  enabled:
+    - EliasHaeussler\Typo3CodeceptionHelper\Codeception\Extension\ApplicationEntrypointModifier:
+        entrypoints:
+          - web-dir: .Build/web
+            main-entrypoint: index.php
+            app-entrypoint: app.php
+          - web-dir: .Build/web/typo3
+            main-entrypoint: index.php
+            app-entrypoint: app.php
