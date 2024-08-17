@@ -28,6 +28,8 @@ use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
 use PHPUnit\Framework;
 use Psr\Log\LogLevel;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 
@@ -42,7 +44,6 @@ final class StreamWriterTest extends Framework\TestCase
 {
     /**
      * @throws \Exception
-     * @runInSeparateProcess
      */
     #[Framework\Attributes\Test]
     #[Framework\Attributes\DataProvider('writeLogProvokesMatchingStreamOutputForLogLevels')]
@@ -51,15 +52,45 @@ final class StreamWriterTest extends Framework\TestCase
         LogRecord $record,
         string $expected,
     ): void {
-        $logWriter = $this->createWriter(['outputStream' => $stream]);
-        self::expectOutputString($expected);
-        $logWriter->writeLog($record);
+        $tempFile = tempnam(dirname(__DIR__, 4) .  '/.Build/temp/', 'stream_writer_test_script_');
+        file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record));
 
-        self::markTestIncomplete(
-            'This test has not been implemented yet.',
+        $process = new Process([PHP_BINARY, $tempFile]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        self::assertSame(
+            $expected,
+            $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput()),
         );
 
-        // composer test -- --stderr
+        unlink($tempFile);
+    }
+
+    private function generatePhpScriptForLogWriting(StandardStream $stream, LogRecord $record): string
+    {
+        $autoload = dirname(__DIR__, 4) . '/.Build/vendor/autoload.php';
+        return <<<PHP
+            <?php
+
+            require_once '$autoload';
+
+            use mteu\StreamWriter\Log\Config\StandardStream;
+            use mteu\StreamWriter\Log\Writer\StreamWriter;
+            use TYPO3\CMS\Core\Log\LogRecord;
+
+            \$logWriter = new StreamWriter(['outputStream' => StandardStream::from('{$stream->value}')]);
+            \$logWriter->writeLog(
+                new LogRecord(
+                    '{$record->getComponent()}',
+                    '{$record->getLevel()}',
+                    '{$record->getMessage()}',
+                ),
+            );
+        PHP;
     }
 
     /**
@@ -169,9 +200,9 @@ final class StreamWriterTest extends Framework\TestCase
         yield 'warning' => [
             StandardStream::Out,
             new LogRecord(
-                'warningComponent',
+                'WarningComponent',
                 LogLevel::WARNING,
-                'warningMessage',
+                'WarningMessage',
             ),
             '[WARNING] WarningComponent: WarningMessage',
         ];
