@@ -52,7 +52,8 @@ final class StreamWriterTest extends Framework\TestCase
         LogRecord $record,
         string $expected,
     ): void {
-        $tempFile = tempnam(dirname(__DIR__, 4) .  '/.Build/temp/', 'stream_writer_test_script_');
+        $tempFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
+
         file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record));
 
         $process = new Process([PHP_BINARY, $tempFile]);

@@ -91,14 +91,9 @@
 			"@test:unit"
 		],
 		"test:coverage": [
-			"@test:coverage:functional",
-			"@test:coverage:unit",
-			"@test:coverage:merge"
+			"@test:coverage:unit"
 		],
-		"test:coverage:functional": "phpunit -c phpunit.functional.xml",
-		"test:coverage:merge": "phpcov merge --html .Build/coverage/html/_merged --clover .Build/coverage/clover.xml --text php://stdout .Build/coverage/php",
 		"test:coverage:unit": "phpunit -c phpunit.unit.xml",
-		"test:functional": "@test:coverage:functional --no-coverage",
 		"test:unit": "@test:coverage:unit --no-coverage"
 	}
 }
