@@ -73,7 +73,7 @@ final class StreamWriterTest extends Framework\TestCase
 
     private function generatePhpScriptForLogWriting(StandardStream $stream, LogRecord $record): string
     {
-        $autoload = dirname(__DIR__, 4) . '/.Build/vendor/autoload.php';
+        $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
         return <<<PHP
             <?php
 

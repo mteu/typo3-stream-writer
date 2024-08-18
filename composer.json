@@ -52,14 +52,14 @@
 			"typo3/class-alias-loader": true,
 			"typo3/cms-composer-installers": true
 		},
-		"bin-dir": ".Build/bin",
+		"bin-dir": ".build/bin",
 		"sort-packages": true,
-		"vendor-dir": ".Build/vendor"
+		"vendor-dir": ".build/vendor"
 	},
 	"extra": {
 		"typo3/cms": {
 			"extension-key": "typo3_stream_writer",
-			"web-dir": ".Build/web"
+			"web-dir": ".build/web"
 		}
 	},
 	"scripts": {
