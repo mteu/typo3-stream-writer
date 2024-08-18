@@ -1,6 +1,6 @@
 {
 	"name": "mteu/typo3-stream-writer",
-	"description": "This extension adds the possibility to log to `stdout` and `stderr`",
+	"description": "This extension adds the possibility to log to php://stdout` and php://stderr",
 	"license": "GPL-3.0-or-later",
 	"type": "typo3-cms-extension",
 	"authors": [
@@ -10,7 +10,7 @@
 		}
 	],
 	"require": {
-		"php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+		"php": "~8.2.0 || ~8.3.0",
 		"typo3/cms-core": "~12.4.0 || ~13.2.0"
 	},
 	"require-dev": {
@@ -27,6 +27,7 @@
 		"phpunit/phpunit": "^10.5",
 		"saschaegerer/phpstan-typo3": "^1.10",
 		"ssch/typo3-rector": "^2.6",
+		"symfony/process": "^7.1",
 		"typo3/coding-standards": "^0.8.0",
 		"typo3/testing-framework": "^8.2"
 	},
@@ -51,14 +52,14 @@
 			"typo3/class-alias-loader": true,
 			"typo3/cms-composer-installers": true
 		},
-		"bin-dir": ".Build/bin",
+		"bin-dir": ".build/bin",
 		"sort-packages": true,
-		"vendor-dir": ".Build/vendor"
+		"vendor-dir": ".build/vendor"
 	},
 	"extra": {
 		"typo3/cms": {
 			"extension-key": "typo3_stream_writer",
-			"web-dir": ".Build/web"
+			"web-dir": ".build/web"
 		}
 	},
 	"scripts": {
@@ -90,14 +91,9 @@
 			"@test:unit"
 		],
 		"test:coverage": [
-			"@test:coverage:functional",
-			"@test:coverage:unit",
-			"@test:coverage:merge"
+			"@test:coverage:unit"
 		],
-		"test:coverage:functional": "phpunit -c phpunit.functional.xml",
-		"test:coverage:merge": "phpcov merge --html .Build/coverage/html/_merged --clover .Build/coverage/clover.xml --text php://stdout .Build/coverage/php",
 		"test:coverage:unit": "phpunit -c phpunit.unit.xml",
-		"test:functional": "@test:coverage:functional --no-coverage",
 		"test:unit": "@test:coverage:unit --no-coverage"
 	}
 }

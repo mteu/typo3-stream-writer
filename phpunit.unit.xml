@@ -1,26 +1,36 @@
 <?xml version="1.0"?>
 <phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     backupGlobals="true"
-    bootstrap=".Build/vendor/typo3/testing-framework/Resources/Core/Build/UnitTestsBootstrap.php"
+    bootstrap=".build/vendor/typo3/testing-framework/Resources/Core/Build/UnitTestsBootstrap.php"
     colors="true"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    displayDetailsOnTestsThatTriggerErrors="true"
+    displayDetailsOnTestsThatTriggerNotices="true"
+    displayDetailsOnTestsThatTriggerWarnings="true"
+    failOnDeprecation="true"
+    failOnNotice="true"
+    failOnWarning="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation=".build/vendor/phpunit/phpunit/phpunit.xsd"
 >
+    <php>
+        <env name="COLUMNS" value="300" />
+    </php>
   <coverage>
-    <report>
-      <php outputFile=".Build/coverage/php/unit.cov"/>
-      <html outputDirectory=".Build/coverage/html/unit/"/>
-      <text outputFile="php://stdout" showOnlySummary="true"/>
-    </report>
+      <report>
+          <clover outputFile=".build/coverage/clover.xml"/>
+          <html outputDirectory=".build/coverage/html"/>
+          <text outputFile="php://stdout" showOnlySummary="true"/>
+      </report>
   </coverage>
+    <logging>
+        <junit outputFile=".build/coverage/junit.xml"/>
+    </logging>
   <testsuites>
     <testsuite name="unit">
       <directory>Tests/Unit</directory>
     </testsuite>
   </testsuites>
-  <logging>
-    <junit outputFile=".Build/coverage/junit/unit.xml"/>
-  </logging>
   <source>
     <include>
       <directory suffix=".php">Classes</directory>

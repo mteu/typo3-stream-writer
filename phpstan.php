@@ -27,7 +27,6 @@ $configuration = [
     ],
 ];
 
-
 $configuration['parameters']['level'] = 'max';
 
 $configuration['parameters']['paths'] = [

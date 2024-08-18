@@ -25,7 +25,7 @@ jobs:
 
       # Validation
       - name: Validate composer.json
-        run: composer validate
+        run: composer validate --no-check-lock
 
       # Install dependencies
       - name: Install Composer dependencies
