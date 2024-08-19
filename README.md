@@ -2,13 +2,12 @@
 
 [![TYPO3 12](https://img.shields.io/badge/TYPO3-12-orange.svg)](https://get.typo3.org/version/12)
 [![TYPO3 13](https://img.shields.io/badge/TYPO3-13-orange.svg)](https://get.typo3.org/version/13)
-
 [![CGL](https://github.com/mteu/typo3-stream-writer/actions/workflows/cgl.yaml/badge.svg)](https://github.com/mteu/typo3-stream-writer/actions/workflows/cgl.yaml)
 [![Tests](https://github.com/mteu/typo3-stream-writer/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/mteu/typo3-stream-writer/actions/workflows/tests.yaml)
-[![codecov](https://codecov.io/gh/mteu/typo3-stream-writer/graph/badge.svg?token=XIx5ikuAYF)](https://codecov.io/gh/mteu/typo3-stream-writer)
 [![Coverage Status](https://coveralls.io/repos/github/mteu/typo3-stream-writer/badge.svg)](https://coveralls.io/github/mteu/typo3-stream-writer)
+[![Maintainability](https://api.codeclimate.com/v1/badges/edd606b0c4de053a2762/maintainability)](https://codeclimate.com/github/mteu/typo3-stream-writer/maintainability)
 
-# TYPO3 Stream Writer
+# TYPO3 Stream Writer 📜
 </div>
 
 This TYPO3 CMS extensions adds a custom `LogWriter` to the TYPO3 Logging Framework allowing the CMS to log messages to
