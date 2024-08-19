@@ -14,7 +14,7 @@
 		"typo3/cms-core": "~12.4.0 || ~13.2.0"
 	},
 	"require-dev": {
-		"armin/editorconfig-cli": "^1.8 ||^2.0",
+		"armin/editorconfig-cli": "^1.8 || ^2.0",
 		"eliashaeussler/typo3-codeception-helper": "^1.1",
 		"ergebnis/composer-normalize": "^2.43",
 		"friendsofphp/php-cs-fixer": "^3.60",
