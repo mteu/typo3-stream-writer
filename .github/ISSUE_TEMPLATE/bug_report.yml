@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help improve this package.
+description: Create a report to help improve this extension.
 title: "[BUG]"
 labels:
   - bug
@@ -9,39 +9,23 @@ body:
     attributes:
       label: PHP version
       description: What PHP version are you using?
-      placeholder: 'e.g. 8.1.5'
+      placeholder: 'e.g. 8.3.10'
     validations:
       required: true
   - type: input
-    id: composer-version
+    id: typo3-version
     attributes:
-      label: Composer version
-      description: What Composer version are you using?
-      placeholder: 'e.g. 2.3.5'
+      label: TYPO3 version
+      description: What version of TYPO3 are you using?
+      placeholder: 'e.g. 13.3.1'
     validations:
       required: true
   - type: input
     id: package-version
     attributes:
-      label: Package version
-      description: What version of this package are you using?
+      label: Extension version
+      description: What version of this extension are you using?
       placeholder: 'e.g. 0.1.0'
-    validations:
-      required: true
-  - type: input
-    id: project-builder-version
-    attributes:
-      label: Project Builder version
-      description: What version of the CPS Project Builder are you using?
-      placeholder: 'e.g. 2.0.1'
-    validations:
-      required: true
-  - type: input
-    id: operating-system
-    attributes:
-      label: Operating system
-      description: What operating system are you using?
-      placeholder: 'e.g. macOS 11.4'
     validations:
       required: true
   - type: textarea
