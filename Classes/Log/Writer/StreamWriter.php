@@ -37,6 +37,11 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  */
 final class StreamWriter extends AbstractWriter
 {
+    /**
+     * @var class-string[]
+     */
+    private array $ignoredComponents = [];
+
     private readonly StandardStream $outputStream;
 
     /**
@@ -67,11 +72,28 @@ final class StreamWriter extends AbstractWriter
             throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
         }
 
+        if (array_key_exists('ignoreComponents', $options)) {
+            $this->ignoredComponents = $options['ignoreComponents'];
+        }
+
         return $options['outputStream'];
     }
 
     public function writeLog(LogRecord $record): WriterInterface
     {
+        if (in_array($record->getComponent(), $this->ignoredComponents, true)) {
+            return $this;
+        }
+
+        if (
+            $record->getComponent() === 'TYPO3.CMS.Core.Error.DebugExceptionHandler' ||
+            $record->getComponent() === 'TYPO3.CMS.Core.Error.ProductionExceptionHandler'
+        ) {
+            $outputMessage = $this->generateMessageForExceptionHandler($record);
+        } else {
+            $outputMessage = $record->getMessage();
+        }
+
         $resource = fopen($this->outputStream->value, 'w');
 
         if ($resource === false) {
@@ -80,12 +102,11 @@ final class StreamWriter extends AbstractWriter
 
         $output = fwrite(
             $resource,
-            // why custom format when LogRecord is stringable?
             sprintf(
                 '[%s] %s: %s' . PHP_EOL,
                 strtoupper($record->getLevel()),
                 $record->getComponent(),
-                $record->getMessage(),
+                $outputMessage,
             ),
         );
 
@@ -94,5 +115,32 @@ final class StreamWriter extends AbstractWriter
         }
 
         return $this;
+    }
+
+    private function generateMessageForExceptionHandler(LogRecord $record): string
+    {
+        /**
+         * @var array{
+         *     mode: string,
+         *     application_mode: string,
+         *     exception_class: string,
+         *     exception_code: int,
+         *     file: string,
+         *     line: int,
+         *     message: string,
+         * } $data
+         */
+        $data = $record->getData();
+
+        return sprintf(
+            '(%s: %s) %s, code %d, file %s, line %d: %s',
+            $data['mode'],
+            $data['application_mode'],
+            $data['exception_class'],
+            $data['exception_code'],
+            $data['file'],
+            $data['line'],
+            $data['message'],
+        );
     }
 }
