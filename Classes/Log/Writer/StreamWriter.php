@@ -91,11 +91,17 @@ final class StreamWriter extends AbstractWriter
             $options['outputStream'] === '' ||
             $options['outputStream'] === null
         ) {
-            throw new InvalidLogWriterConfigurationException('Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"', 1722422118);
+            throw new InvalidLogWriterConfigurationException(
+                'Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"',
+                1722422118,
+            );
         }
 
         if (!$options['outputStream'] instanceof StandardStream) {
-            throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
+            throw new InvalidLogWriterConfigurationException(
+                'Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"',
+                1722422119,
+            );
         }
 
         return $options['outputStream'];
