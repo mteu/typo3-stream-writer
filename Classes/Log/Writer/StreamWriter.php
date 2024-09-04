@@ -37,6 +37,19 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  */
 final class StreamWriter extends AbstractWriter
 {
+    /**
+     * @var class-string[]
+     */
+    private array $ignoredComponents = [];
+
+    /**
+     * @var class-string[] $exceptionHandlers
+     */
+    private array $exceptionHandlers = [
+        \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class,
+        \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class,
+    ];
+
     private readonly StandardStream $outputStream;
 
     /**
@@ -60,11 +73,21 @@ final class StreamWriter extends AbstractWriter
             $options['outputStream'] === '' ||
             $options['outputStream'] === null
         ) {
-            throw new InvalidLogWriterConfigurationException('Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"', 1722422118);
+            throw new InvalidLogWriterConfigurationException(
+                'Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"',
+                1722422118,
+            );
         }
 
         if (!$options['outputStream'] instanceof StandardStream) {
-            throw new InvalidLogWriterConfigurationException('Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"', 1722422119);
+            throw new InvalidLogWriterConfigurationException(
+                'Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"',
+                1722422119,
+            );
+        }
+
+        if (array_key_exists('ignoreComponents', $options)) {
+            $this->ignoredComponents = $options['ignoreComponents'];
         }
 
         return $options['outputStream'];
@@ -72,6 +95,10 @@ final class StreamWriter extends AbstractWriter
 
     public function writeLog(LogRecord $record): WriterInterface
     {
+        if (in_array($record->getComponent(), $this->ignoredComponents, true)) {
+            return $this;
+        }
+
         $resource = fopen($this->outputStream->value, 'w');
 
         if ($resource === false) {
@@ -80,12 +107,13 @@ final class StreamWriter extends AbstractWriter
 
         $output = fwrite(
             $resource,
-            // why custom format when LogRecord is stringable?
             sprintf(
                 '[%s] %s: %s' . PHP_EOL,
                 strtoupper($record->getLevel()),
                 $record->getComponent(),
-                $record->getMessage(),
+                $this->isExceptionHandler($record->getComponent()) ?
+                    $this->generateMessageForExceptionHandler($record) :
+                    $record->getMessage(),
             ),
         );
 
@@ -94,5 +122,45 @@ final class StreamWriter extends AbstractWriter
         }
 
         return $this;
+    }
+
+    private function generateMessageForExceptionHandler(LogRecord $record): string
+    {
+        /**
+         * @var array{
+         *     mode: string,
+         *     application_mode: string,
+         *     exception_class: string,
+         *     exception_code: int,
+         *     file: string,
+         *     line: int,
+         *     message: string,
+         * } $data
+         */
+        $data = $record->getData();
+
+        return sprintf(
+            '(%s: %s) %s, code %d, file %s, line %d: %s',
+            $data['mode'],
+            $data['application_mode'],
+            $data['exception_class'],
+            $data['exception_code'],
+            $data['file'],
+            $data['line'],
+            $data['message'],
+        );
+    }
+
+    private function isExceptionHandler(string $component): bool
+    {
+        $classString = str_replace('.', '\\', $component);
+
+        foreach ($this->exceptionHandlers as $handler) {
+            if (is_a($classString, $handler, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

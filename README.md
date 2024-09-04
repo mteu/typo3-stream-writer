@@ -39,14 +39,18 @@ use mteu\StreamWriter\Log\Writer\StreamWriter;
 defined('TYPO3') or die();
 
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
-    \Psr\Log\LogLevel::ERROR => [
+     \Psr\Log\LogLevel::ERROR => [
         StreamWriter::class => [
             'outputStream' => StandardStream::Error,
         ],
     ],
-    \Psr\Log\LogLevel::WARNING => [
+    \Psr\Log\LogLevel::DEBUG => [
         StreamWriter::class => [
             'outputStream' => StandardStream::Out,
+            'ignoreComponents' => [
+                'TYPO3.CMS.Core.Authentication.BackendUserAuthentication',
+                'TYPO3.CMS.Frontend.Authentication.FrontendUserAuthentication',
+            ],
         ],
     ],
 ];
