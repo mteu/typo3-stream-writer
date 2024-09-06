@@ -219,15 +219,17 @@ final class StreamWriterTest extends Framework\TestCase
     public static function generateLogRecordsForStandardStream(): \Generator
     {
         foreach (StandardStream::cases() as $stream) {
+            $streamKey = strtolower($stream->name);
+
             foreach (Src\LogLevel::cases() as $logLevel) {
-                yield 'Write ' . $logLevel->value . ' to ' . strtolower($stream->name) => [
+                yield 'Write ' . $logLevel->value . ' to ' . $streamKey => [
                     $stream,
                     new LogRecord(
                         $logLevel->value . 'Component',
                         $logLevel->value,
                         $logLevel->value . 'Message',
                         [],
-                        'requestId_' . strtolower($stream->name),
+                        'requestId_' . $streamKey,
                     ),
                     sprintf(
                         '[%s] %s: %s',
