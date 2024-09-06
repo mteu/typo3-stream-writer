@@ -41,7 +41,6 @@ use TYPO3\CMS\Core\Log\LogRecord;
 #[Framework\Attributes\CoversClass(Src\Writer\StreamWriter::class)]
 final class StreamWriterTest extends Framework\TestCase
 {
-
     /**
      * @throws \Exception
      */
@@ -110,8 +109,7 @@ final class StreamWriterTest extends Framework\TestCase
     ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
         $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
-        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage_subprocess/run_'. uniqid();
-        $includeInCodeCoverage = true;
+        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/subprocess_' . uniqid() . '.cov';
 
         return <<<PHP
             <?php
@@ -123,20 +121,18 @@ final class StreamWriterTest extends Framework\TestCase
             use SebastianBergmann\CodeCoverage\Filter;
             use SebastianBergmann\CodeCoverage\Driver\Selector;
             use SebastianBergmann\CodeCoverage\CodeCoverage;
-            use SebastianBergmann\CodeCoverage\Report\Clover as Report;
+            use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
             use TYPO3\CMS\Core\Log\LogRecord;
 
-            //if ('$includeInCodeCoverage' === true) {
-                \$filter = new Filter;
-                \$filter->includeFiles(['$classFileName']);
+            \$filter = new Filter;
+            \$filter->includeFiles(['$classFileName']);
 
-                \$coverage = new CodeCoverage(
-                    (new Selector)->forLineCoverage(\$filter),
-                    \$filter
-                );
+            \$coverage = new CodeCoverage(
+                (new Selector)->forLineCoverage(\$filter),
+                \$filter
+            );
 
-                \$coverage->start('write-log_test');
-            //}
+            \$coverage->start('write-log_test');
 
 
             \$logWriter = new StreamWriter(
@@ -155,10 +151,8 @@ final class StreamWriterTest extends Framework\TestCase
                 ),
             );
 
-            //if ('$includeInCodeCoverage' === true) {
-                \$coverage->stop();
-                (new Report)->process(\$coverage, '$coverageFile');
-            //}
+            \$coverage->stop();
+            (new PhpReport)->process(\$coverage, '$coverageFile');
         PHP;
     }
 
@@ -247,18 +241,6 @@ final class StreamWriterTest extends Framework\TestCase
                     ),
                 ];
             }
-        }
-    }
-
-    private function unlinkProcessCoverageFiles(): void
-    {
-        $cf = count($this->coverageFiles);
-
-        if ($cf > 0) {
-            foreach ($this->coverageFiles as $coverageFile) {
-                unlink($coverageFile);
-            }
-            echo 'Unlinked ' . $cf . ' files'. PHP_EOL;
         }
     }
 }

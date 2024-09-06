@@ -20,7 +20,6 @@
 		"friendsofphp/php-cs-fixer": "^3.60",
 		"mteu/docblock-rules": "^0.3",
 		"mteu/zealous-stan": "^0.6",
-		"nimut/phpunit-merger": "^2.0",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.11",
 		"phpstan/phpstan-phpunit": "^1.4",
@@ -93,8 +92,15 @@
 			"@test:unit"
 		],
 		"test:coverage": [
-			"@test:coverage:unit"
+			"@test:coverage:unit",
+			"@test:coverage:merge"
 		],
+		"test:coverage:merge": [
+			"@test:coverage:merge:clover",
+			"@test:coverage:merge:html"
+		],
+		"test:coverage:merge:clover": "phpcov merge --clover .build/coverage/merged.clover.xml .build/coverage/",
+		"test:coverage:merge:html": "phpcov merge --html .build/coverage/merged_html .build/coverage/",
 		"test:coverage:unit": "phpunit -c phpunit.unit.xml",
 		"test:unit": "@test:coverage:unit --no-coverage"
 	}
