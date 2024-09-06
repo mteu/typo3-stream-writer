@@ -101,12 +101,13 @@ final class StreamWriterTest extends Framework\TestCase
         LogRecord $record,
         Src\LogLevel $maxLevel = Src\LogLevel::EMERGENCY,
     ): string {
-        $tempFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
+        $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
+        $tempCoverageFile =  tempnam(sys_get_temp_dir(), 'phpunit_coverage_of_stream_writer_test_script_');
 
-        file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
+        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
 
         // @todo: ensure this path is included in the coverage report
-        $process = new Process([PHP_BINARY, $tempFile]);
+        $process = new Process([PHP_BINARY, $tempOutputFile]);
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -115,7 +116,7 @@ final class StreamWriterTest extends Framework\TestCase
 
         $output = $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
 
-        unlink($tempFile);
+        unlink($tempCoverageFile);
 
         return $output;
     }
@@ -126,6 +127,8 @@ final class StreamWriterTest extends Framework\TestCase
         Src\LogLevel $maxLevel = Src\LogLevel::DEBUG,
     ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
+        $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
+        $coverageFile = dirname(__DIR__, 4) . '/.build/temp/phpunit_coverage_of_stream_writer_test_script';
 
         return <<<PHP
             <?php
@@ -134,7 +137,21 @@ final class StreamWriterTest extends Framework\TestCase
 
             use mteu\StreamWriter\Log\Config\StandardStream;
             use mteu\StreamWriter\Log\Writer\StreamWriter;
+            use SebastianBergmann\CodeCoverage\Filter;
+            use SebastianBergmann\CodeCoverage\Driver\Selector;
+            use SebastianBergmann\CodeCoverage\CodeCoverage;
+            use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
             use TYPO3\CMS\Core\Log\LogRecord;
+
+            \$filter = new Filter;
+            \$filter->includeFiles(['$classFileName']);
+
+            \$coverage = new CodeCoverage(
+                (new Selector)->forLineCoverage(\$filter),
+                \$filter
+            );
+
+            \$coverage->start('stream-writer_write-log_test');
 
             \$logWriter = new StreamWriter(
                 [
@@ -151,6 +168,11 @@ final class StreamWriterTest extends Framework\TestCase
                     '{$record->getRequestId()}',
                 ),
             );
+
+            \$coverage->stop();
+            (new HtmlReport)->process(\$coverage, '$coverageFile');
+
+            # file_put_contents('\$coverageFile', serialize(\$coverage));
         PHP;
     }
 
