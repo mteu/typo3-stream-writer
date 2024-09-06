@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
 
-use mteu\StreamWriter as Src;
+use mteu\StreamWriter\Log as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
 use PHPUnit\Framework;
@@ -39,22 +39,71 @@ use TYPO3\CMS\Core\Log\LogRecord;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-#[Framework\Attributes\CoversClass(Src\Log\Writer\StreamWriter::class)]
+#[Framework\Attributes\CoversClass(Src\Writer\StreamWriter::class)]
 final class StreamWriterTest extends Framework\TestCase
 {
     /**
      * @throws \Exception
      */
     #[Framework\Attributes\Test]
-    #[Framework\Attributes\DataProvider('writeLogProvokesMatchingStreamOutputForLogLevels')]
+    #[Framework\Attributes\DataProvider('generateLogRecordsForStandardStream')]
     public function writeLogSucceedsInWritingToStream(
         StandardStream $stream,
         LogRecord $record,
         string $expected,
     ): void {
+
+        self::assertSame(
+            $expected,
+            $this->writeToStreamInSeparateProcess($stream, $record),
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Framework\Attributes\Test]
+    #[Framework\Attributes\DataProvider('generateLogRecordsForStandardStream')]
+    public function writeLogRespectsMaximumLevelBoundary(
+        StandardStream $stream,
+        LogRecord $record,
+        string $expected,
+    ): void {
+
+        foreach (Src\LogLevel::cases() as $potentialMaxLevel) {
+
+            $recordLevelPriority = \mteu\StreamWriter\Log\LogLevel::tryFrom($record->getLevel())?->priority();
+
+            match (true) {
+                // level is outside bounds
+                $recordLevelPriority > $potentialMaxLevel->priority() => self::assertEmpty(
+                    $this->writeToStreamInSeparateProcess(
+                        $stream,
+                        $record,
+                        $potentialMaxLevel,
+                    ),
+                ),
+                // level is within bounds or null
+                default => self::assertSame(
+                    $expected,
+                    $this->writeToStreamInSeparateProcess(
+                        $stream,
+                        $record,
+                        $potentialMaxLevel,
+                    ),
+                ),
+            };
+        }
+    }
+
+    private function writeToStreamInSeparateProcess(
+        StandardStream $stream,
+        LogRecord $record,
+        Src\LogLevel $maxLevel = Src\LogLevel::EMERGENCY,
+    ): string {
         $tempFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
 
-        file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record));
+        file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
 
         // @todo: ensure this path is included in the coverage report
         $process = new Process([PHP_BINARY, $tempFile]);
@@ -64,17 +113,20 @@ final class StreamWriterTest extends Framework\TestCase
             throw new ProcessFailedException($process);
         }
 
-        self::assertSame(
-            $expected,
-            $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput()),
-        );
+        $output = $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
 
         unlink($tempFile);
+
+        return $output;
     }
 
-    private function generatePhpScriptForLogWriting(StandardStream $stream, LogRecord $record): string
-    {
+    private function generatePhpScriptForLogWriting(
+        StandardStream $stream,
+        LogRecord $record,
+        Src\LogLevel $maxLevel = Src\LogLevel::DEBUG,
+    ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
+
         return <<<PHP
             <?php
 
@@ -84,12 +136,19 @@ final class StreamWriterTest extends Framework\TestCase
             use mteu\StreamWriter\Log\Writer\StreamWriter;
             use TYPO3\CMS\Core\Log\LogRecord;
 
-            \$logWriter = new StreamWriter(['outputStream' => StandardStream::from('{$stream->value}')]);
+            \$logWriter = new StreamWriter(
+                [
+                    'outputStream' => StandardStream::from('{$stream->value}'),
+                    'maxLevel' => '{$maxLevel->value}',
+                ],
+            );
             \$logWriter->writeLog(
                 new LogRecord(
                     '{$record->getComponent()}',
                     '{$record->getLevel()}',
                     '{$record->getMessage()}',
+                    [],
+                    '{$record->getRequestId()}',
                 ),
             );
         PHP;
@@ -100,14 +159,14 @@ final class StreamWriterTest extends Framework\TestCase
      * @return StreamWriter
      * @throws InvalidLogWriterConfigurationException
      */
-    private function createWriter(array $options = []): Src\Log\Writer\StreamWriter
+    private function createWriter(array $options = []): Src\Writer\StreamWriter
     {
         if ($options === []) {
-            return new Src\Log\Writer\StreamWriter();
+            return new Src\Writer\StreamWriter();
         }
 
         /** @phpstan-ignore argument.type */
-        return new Src\Log\Writer\StreamWriter($options);
+        return new Src\Writer\StreamWriter($options);
     }
 
     #[Framework\Attributes\Test]
@@ -115,7 +174,7 @@ final class StreamWriterTest extends Framework\TestCase
     {
         $subject = $this->createWriter();
         /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-        self::assertInstanceOf(Src\Log\Writer\StreamWriter::class, $subject);
+        self::assertInstanceOf(Src\Writer\StreamWriter::class, $subject);
     }
 
     #[Framework\Attributes\Test]
@@ -124,7 +183,7 @@ final class StreamWriterTest extends Framework\TestCase
         foreach (StandardStream::cases() as $standardStream) {
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             self::assertInstanceOf(
-                Src\Log\Writer\StreamWriter::class,
+                Src\Writer\StreamWriter::class,
                 $this->createWriter(['outputStream' => $standardStream])
             );
         }
@@ -157,7 +216,7 @@ final class StreamWriterTest extends Framework\TestCase
     /**
      * @return \Generator<string, array{StandardStream, LogRecord, string}>
      */
-    public static function writeLogProvokesMatchingStreamOutputForLogLevels(): \Generator
+    public static function generateLogRecordsForStandardStream(): \Generator
     {
         yield 'emergency' => [
             StandardStream::Error,
@@ -165,6 +224,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'EmergencyComponent',
                 LogLevel::EMERGENCY,
                 'EmergencyMessage',
+                [],
+                'requestId_emergency',
             ),
             '[EMERGENCY] EmergencyComponent: EmergencyMessage',
         ];
@@ -175,6 +236,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'AlertComponent',
                 LogLevel::ALERT,
                 'AlertMessage',
+                [],
+                'requestId_alert',
             ),
             '[ALERT] AlertComponent: AlertMessage',
         ];
@@ -185,6 +248,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'CriticalComponent',
                 LogLevel::CRITICAL,
                 'CriticalMessage',
+                [],
+                'requestId_critical',
             ),
             '[CRITICAL] CriticalComponent: CriticalMessage',
         ];
@@ -195,6 +260,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'ErrorComponent',
                 LogLevel::ERROR,
                 'ErrorMessage',
+                [],
+                'requestId_error',
             ),
             '[ERROR] ErrorComponent: ErrorMessage',
         ];
@@ -205,6 +272,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'WarningComponent',
                 LogLevel::WARNING,
                 'WarningMessage',
+                [],
+                'requestId_warning',
             ),
             '[WARNING] WarningComponent: WarningMessage',
         ];
@@ -215,6 +284,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'NoticeComponent',
                 LogLevel::NOTICE,
                 'NoticeMessage',
+                [],
+                'requestId_notice',
             ),
             '[NOTICE] NoticeComponent: NoticeMessage',
         ];
@@ -225,6 +296,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'InfoComponent',
                 LogLevel::INFO,
                 'InfoMessage',
+                [],
+                'requestId_info',
             ),
             '[INFO] InfoComponent: InfoMessage',
         ];
@@ -235,6 +308,8 @@ final class StreamWriterTest extends Framework\TestCase
                 'DebugComponent',
                 LogLevel::DEBUG,
                 'DebugMessage',
+                [],
+                'requestId_debug',
             ),
             '[DEBUG] DebugComponent: DebugMessage',
         ];

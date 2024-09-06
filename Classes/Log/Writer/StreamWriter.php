@@ -203,11 +203,8 @@ final class StreamWriter extends AbstractWriter
 
     private function levelIsWithinBounds(LogRecord $record): bool
     {
-        $logLevel = LogLevel::tryFrom($record->getLevel());
+        $logLevelPriority = LogLevel::tryFrom($record->getLevel())?->priority();
 
-        return
-            $logLevel === null ||
-            $logLevel->priority() > $this->maxLevel->priority()
-        ;
+        return $logLevelPriority <= $this->maxLevel->priority();
     }
 }
