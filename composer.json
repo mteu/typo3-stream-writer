@@ -20,6 +20,7 @@
 		"friendsofphp/php-cs-fixer": "^3.60",
 		"mteu/docblock-rules": "^0.3",
 		"mteu/zealous-stan": "^0.6",
+		"nimut/phpunit-merger": "^2.0",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.11",
 		"phpstan/phpstan-phpunit": "^1.4",

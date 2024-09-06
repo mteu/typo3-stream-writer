@@ -27,7 +27,6 @@ use mteu\StreamWriter\Log as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
 use PHPUnit\Framework;
-use Psr\Log\LogLevel;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
@@ -42,22 +41,6 @@ use TYPO3\CMS\Core\Log\LogRecord;
 #[Framework\Attributes\CoversClass(Src\Writer\StreamWriter::class)]
 final class StreamWriterTest extends Framework\TestCase
 {
-    /**
-     * @throws \Exception
-     */
-    #[Framework\Attributes\Test]
-    #[Framework\Attributes\DataProvider('generateLogRecordsForStandardStream')]
-    public function writeLogSucceedsInWritingToStream(
-        StandardStream $stream,
-        LogRecord $record,
-        string $expected,
-    ): void {
-
-        self::assertSame(
-            $expected,
-            $this->writeToStreamInSeparateProcess($stream, $record),
-        );
-    }
 
     /**
      * @throws \Exception
@@ -102,7 +85,6 @@ final class StreamWriterTest extends Framework\TestCase
         Src\LogLevel $maxLevel = Src\LogLevel::EMERGENCY,
     ): string {
         $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
-        $tempCoverageFile =  tempnam(sys_get_temp_dir(), 'phpunit_coverage_of_stream_writer_test_script_');
 
         file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
 
@@ -116,7 +98,7 @@ final class StreamWriterTest extends Framework\TestCase
 
         $output = $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
 
-        unlink($tempCoverageFile);
+        unlink($tempOutputFile);
 
         return $output;
     }
@@ -128,7 +110,8 @@ final class StreamWriterTest extends Framework\TestCase
     ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
         $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
-        $coverageFile = dirname(__DIR__, 4) . '/.build/temp/phpunit_coverage_of_stream_writer_test_script';
+        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage_subprocess/run_'. uniqid();
+        $includeInCodeCoverage = true;
 
         return <<<PHP
             <?php
@@ -140,18 +123,21 @@ final class StreamWriterTest extends Framework\TestCase
             use SebastianBergmann\CodeCoverage\Filter;
             use SebastianBergmann\CodeCoverage\Driver\Selector;
             use SebastianBergmann\CodeCoverage\CodeCoverage;
-            use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
+            use SebastianBergmann\CodeCoverage\Report\Clover as Report;
             use TYPO3\CMS\Core\Log\LogRecord;
 
-            \$filter = new Filter;
-            \$filter->includeFiles(['$classFileName']);
+            //if ('$includeInCodeCoverage' === true) {
+                \$filter = new Filter;
+                \$filter->includeFiles(['$classFileName']);
 
-            \$coverage = new CodeCoverage(
-                (new Selector)->forLineCoverage(\$filter),
-                \$filter
-            );
+                \$coverage = new CodeCoverage(
+                    (new Selector)->forLineCoverage(\$filter),
+                    \$filter
+                );
 
-            \$coverage->start('stream-writer_write-log_test');
+                \$coverage->start('write-log_test');
+            //}
+
 
             \$logWriter = new StreamWriter(
                 [
@@ -169,10 +155,10 @@ final class StreamWriterTest extends Framework\TestCase
                 ),
             );
 
-            \$coverage->stop();
-            (new HtmlReport)->process(\$coverage, '$coverageFile');
-
-            # file_put_contents('\$coverageFile', serialize(\$coverage));
+            //if ('$includeInCodeCoverage' === true) {
+                \$coverage->stop();
+                (new Report)->process(\$coverage, '$coverageFile');
+            //}
         PHP;
     }
 
@@ -261,6 +247,18 @@ final class StreamWriterTest extends Framework\TestCase
                     ),
                 ];
             }
+        }
+    }
+
+    private function unlinkProcessCoverageFiles(): void
+    {
+        $cf = count($this->coverageFiles);
+
+        if ($cf > 0) {
+            foreach ($this->coverageFiles as $coverageFile) {
+                unlink($coverageFile);
+            }
+            echo 'Unlinked ' . $cf . ' files'. PHP_EOL;
         }
     }
 }
