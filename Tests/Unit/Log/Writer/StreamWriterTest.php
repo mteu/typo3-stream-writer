@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
 
-use http\Env\Response;
 use mteu\StreamWriter\Log as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
