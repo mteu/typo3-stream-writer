@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace mteu\StreamWriter\Log\Writer;
 
 use mteu\StreamWriter\Log\Config\StandardStream;
+use mteu\StreamWriter\Log\LogLevel;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
@@ -40,7 +41,7 @@ final class StreamWriter extends AbstractWriter
     /**
      * @var class-string[]
      */
-    private array $ignoredComponents = [];
+    private readonly array $ignoredComponents;
 
     /**
      * @var class-string[] $exceptionHandlers
@@ -49,6 +50,8 @@ final class StreamWriter extends AbstractWriter
         \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class,
         \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class,
     ];
+
+    private readonly LogLevel $maxLevel;
 
     private readonly StandardStream $outputStream;
 
@@ -60,14 +63,29 @@ final class StreamWriter extends AbstractWriter
     {
         parent::__construct();
 
-        $this->outputStream = $this->validateWriterOptions($options);
+        $this->maxLevel = $this->determineMaximalLevel($options);
+        $this->outputStream = $this->getOutputStreamOption($options);
+        $this->ignoredComponents = $this->getIgnoredComponentsOption($options);
+    }
+
+    /**
+     * @param mixed[] $options
+     * @return class-string[]
+     */
+    private function getIgnoredComponentsOption(array $options): array
+    {
+        if (array_key_exists('ignoreComponents', $options)) {
+            return $options['ignoreComponents'];
+        }
+
+        return [];
     }
 
     /**
      * @param mixed[] $options
      * @throws InvalidLogWriterConfigurationException
      */
-    private function validateWriterOptions(array $options): StandardStream
+    private function getOutputStreamOption(array $options): StandardStream
     {
         if (!array_key_exists('outputStream', $options) ||
             $options['outputStream'] === '' ||
@@ -86,10 +104,6 @@ final class StreamWriter extends AbstractWriter
             );
         }
 
-        if (array_key_exists('ignoreComponents', $options)) {
-            $this->ignoredComponents = $options['ignoreComponents'];
-        }
-
         return $options['outputStream'];
     }
 
@@ -99,6 +113,17 @@ final class StreamWriter extends AbstractWriter
             return $this;
         }
 
+        if (!$this->levelIsWithinBounds($record)) {
+            return $this;
+        }
+
+        $this->writeToResource($record);
+
+        return $this;
+    }
+
+    private function writeToResource(LogRecord $record): void
+    {
         $resource = fopen($this->outputStream->value, 'w');
 
         if ($resource === false) {
@@ -117,11 +142,9 @@ final class StreamWriter extends AbstractWriter
             ),
         );
 
-        if ($output === false) {
+        if ($output === false || $output === 0) {
             throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331958);
         }
-
-        return $this;
     }
 
     private function generateMessageForExceptionHandler(LogRecord $record): string
@@ -162,5 +185,26 @@ final class StreamWriter extends AbstractWriter
         }
 
         return false;
+    }
+
+    /**
+     * @param mixed[] $options
+     */
+    private function determineMaximalLevel(array $options): LogLevel
+    {
+        $default = LogLevel::CRITICAL;
+
+        if (!array_key_exists('maxLevel', $options)) {
+            return $default;
+        }
+
+        return LogLevel::tryFrom($options['maxLevel']) ?? $default;
+    }
+
+    private function levelIsWithinBounds(LogRecord $record): bool
+    {
+        $logLevelPriority = LogLevel::tryFrom($record->getLevel())?->priority();
+
+        return $logLevelPriority <= $this->maxLevel->priority();
     }
 }
