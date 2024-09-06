@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Log;
 
+/**
+ * @codeCoverageIgnore
+ */
 enum LogLevel: string
 {
     case ALERT     = 'alert';
