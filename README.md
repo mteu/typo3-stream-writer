@@ -51,9 +51,12 @@ $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
                 'TYPO3.CMS.Core.Authentication.BackendUserAuthentication',
                 'TYPO3.CMS.Frontend.Authentication.FrontendUserAuthentication',
             ],
+            'maxLevel' => Psr\Log\LogLevel::WARNING,
         ],
     ],
 ];
 ```
+> 💡 Learn more about the LogWriter configuration in [`WriterConfiguration`](Documentation/writer-configuration.md).
+
 ## ⭐ License
 This project is licensed under [GNU General Public License 3.0 (or later)](LICENSE).
