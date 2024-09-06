@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
 
+use http\Env\Response;
 use mteu\StreamWriter\Log as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
@@ -218,100 +219,25 @@ final class StreamWriterTest extends Framework\TestCase
      */
     public static function generateLogRecordsForStandardStream(): \Generator
     {
-        yield 'emergency' => [
-            StandardStream::Error,
-            new LogRecord(
-                'EmergencyComponent',
-                LogLevel::EMERGENCY,
-                'EmergencyMessage',
-                [],
-                'requestId_emergency',
-            ),
-            '[EMERGENCY] EmergencyComponent: EmergencyMessage',
-        ];
-
-        yield 'alert' => [
-            StandardStream::Error,
-            new LogRecord(
-                'AlertComponent',
-                LogLevel::ALERT,
-                'AlertMessage',
-                [],
-                'requestId_alert',
-            ),
-            '[ALERT] AlertComponent: AlertMessage',
-        ];
-
-        yield 'critical' => [
-            StandardStream::Error,
-            new LogRecord(
-                'CriticalComponent',
-                LogLevel::CRITICAL,
-                'CriticalMessage',
-                [],
-                'requestId_critical',
-            ),
-            '[CRITICAL] CriticalComponent: CriticalMessage',
-        ];
-
-        yield 'error' => [
-            StandardStream::Error,
-            new LogRecord(
-                'ErrorComponent',
-                LogLevel::ERROR,
-                'ErrorMessage',
-                [],
-                'requestId_error',
-            ),
-            '[ERROR] ErrorComponent: ErrorMessage',
-        ];
-
-        yield 'warning' => [
-            StandardStream::Out,
-            new LogRecord(
-                'WarningComponent',
-                LogLevel::WARNING,
-                'WarningMessage',
-                [],
-                'requestId_warning',
-            ),
-            '[WARNING] WarningComponent: WarningMessage',
-        ];
-
-        yield 'notice' => [
-            StandardStream::Out,
-            new LogRecord(
-                'NoticeComponent',
-                LogLevel::NOTICE,
-                'NoticeMessage',
-                [],
-                'requestId_notice',
-            ),
-            '[NOTICE] NoticeComponent: NoticeMessage',
-        ];
-
-        yield 'info' => [
-            StandardStream::Out,
-            new LogRecord(
-                'InfoComponent',
-                LogLevel::INFO,
-                'InfoMessage',
-                [],
-                'requestId_info',
-            ),
-            '[INFO] InfoComponent: InfoMessage',
-        ];
-
-        yield 'debug' => [
-            StandardStream::Out,
-            new LogRecord(
-                'DebugComponent',
-                LogLevel::DEBUG,
-                'DebugMessage',
-                [],
-                'requestId_debug',
-            ),
-            '[DEBUG] DebugComponent: DebugMessage',
-        ];
+        foreach (StandardStream::cases() as $stream) {
+            foreach (Src\LogLevel::cases() as $logLevel) {
+                yield 'Write ' . $logLevel->value . ' to ' . strtolower($stream->name) => [
+                    $stream,
+                    new LogRecord(
+                        $logLevel->value . 'Component',
+                        $logLevel->value,
+                        $logLevel->value . 'Message',
+                        [],
+                        'requestId_' . strtolower($stream->name),
+                    ),
+                    sprintf(
+                        '[%s] %s: %s',
+                        strtoupper($logLevel->value),
+                        $logLevel->value . 'Component',
+                        $logLevel->value . 'Message',
+                    ),
+                ];
+            }
+        }
     }
 }
