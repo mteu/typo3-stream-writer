@@ -27,7 +27,6 @@ use mteu\StreamWriter\Log as Src;
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\Writer\StreamWriter;
 use PHPUnit\Framework;
-use Psr\Log\LogLevel;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
@@ -42,23 +41,6 @@ use TYPO3\CMS\Core\Log\LogRecord;
 #[Framework\Attributes\CoversClass(Src\Writer\StreamWriter::class)]
 final class StreamWriterTest extends Framework\TestCase
 {
-    /**
-     * @throws \Exception
-     */
-    #[Framework\Attributes\Test]
-    #[Framework\Attributes\DataProvider('generateLogRecordsForStandardStream')]
-    public function writeLogSucceedsInWritingToStream(
-        StandardStream $stream,
-        LogRecord $record,
-        string $expected,
-    ): void {
-
-        self::assertSame(
-            $expected,
-            $this->writeToStreamInSeparateProcess($stream, $record),
-        );
-    }
-
     /**
      * @throws \Exception
      */
@@ -81,6 +63,7 @@ final class StreamWriterTest extends Framework\TestCase
                         $stream,
                         $record,
                         $potentialMaxLevel,
+                        __METHOD__,
                     ),
                 ),
                 // level is within bounds or null
@@ -90,6 +73,7 @@ final class StreamWriterTest extends Framework\TestCase
                         $stream,
                         $record,
                         $potentialMaxLevel,
+                        __METHOD__,
                     ),
                 ),
             };
@@ -99,14 +83,14 @@ final class StreamWriterTest extends Framework\TestCase
     private function writeToStreamInSeparateProcess(
         StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel = Src\LogLevel::EMERGENCY,
+        Src\LogLevel $maxLevel,
+        string $trigger,
     ): string {
-        $tempFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
+        $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
 
-        file_put_contents($tempFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
+        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger));
 
-        // @todo: ensure this path is included in the coverage report
-        $process = new Process([PHP_BINARY, $tempFile]);
+        $process = new Process([PHP_BINARY, $tempOutputFile]);
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -115,7 +99,7 @@ final class StreamWriterTest extends Framework\TestCase
 
         $output = $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
 
-        unlink($tempFile);
+        unlink($tempOutputFile);
 
         return $output;
     }
@@ -123,9 +107,12 @@ final class StreamWriterTest extends Framework\TestCase
     private function generatePhpScriptForLogWriting(
         StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel = Src\LogLevel::DEBUG,
+        Src\LogLevel $maxLevel,
+        string $trigger,
     ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
+        $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
+        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
 
         return <<<PHP
             <?php
@@ -134,7 +121,22 @@ final class StreamWriterTest extends Framework\TestCase
 
             use mteu\StreamWriter\Log\Config\StandardStream;
             use mteu\StreamWriter\Log\Writer\StreamWriter;
+            use SebastianBergmann\CodeCoverage\Filter;
+            use SebastianBergmann\CodeCoverage\Driver\Selector;
+            use SebastianBergmann\CodeCoverage\CodeCoverage;
+            use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
             use TYPO3\CMS\Core\Log\LogRecord;
+
+            \$filter = new Filter;
+            \$filter->includeFiles(['$classFileName']);
+
+            \$coverage = new CodeCoverage(
+                (new Selector)->forLineCoverage(\$filter),
+                \$filter
+            );
+
+            \$coverage->start('{$trigger}');
+
 
             \$logWriter = new StreamWriter(
                 [
@@ -151,6 +153,9 @@ final class StreamWriterTest extends Framework\TestCase
                     '{$record->getRequestId()}',
                 ),
             );
+
+            \$coverage->stop();
+            (new PhpReport)->process(\$coverage, '$coverageFile');
         PHP;
     }
 
@@ -218,100 +223,27 @@ final class StreamWriterTest extends Framework\TestCase
      */
     public static function generateLogRecordsForStandardStream(): \Generator
     {
-        yield 'emergency' => [
-            StandardStream::Error,
-            new LogRecord(
-                'EmergencyComponent',
-                LogLevel::EMERGENCY,
-                'EmergencyMessage',
-                [],
-                'requestId_emergency',
-            ),
-            '[EMERGENCY] EmergencyComponent: EmergencyMessage',
-        ];
+        foreach (StandardStream::cases() as $stream) {
+            $streamKey = strtolower($stream->name);
 
-        yield 'alert' => [
-            StandardStream::Error,
-            new LogRecord(
-                'AlertComponent',
-                LogLevel::ALERT,
-                'AlertMessage',
-                [],
-                'requestId_alert',
-            ),
-            '[ALERT] AlertComponent: AlertMessage',
-        ];
-
-        yield 'critical' => [
-            StandardStream::Error,
-            new LogRecord(
-                'CriticalComponent',
-                LogLevel::CRITICAL,
-                'CriticalMessage',
-                [],
-                'requestId_critical',
-            ),
-            '[CRITICAL] CriticalComponent: CriticalMessage',
-        ];
-
-        yield 'error' => [
-            StandardStream::Error,
-            new LogRecord(
-                'ErrorComponent',
-                LogLevel::ERROR,
-                'ErrorMessage',
-                [],
-                'requestId_error',
-            ),
-            '[ERROR] ErrorComponent: ErrorMessage',
-        ];
-
-        yield 'warning' => [
-            StandardStream::Out,
-            new LogRecord(
-                'WarningComponent',
-                LogLevel::WARNING,
-                'WarningMessage',
-                [],
-                'requestId_warning',
-            ),
-            '[WARNING] WarningComponent: WarningMessage',
-        ];
-
-        yield 'notice' => [
-            StandardStream::Out,
-            new LogRecord(
-                'NoticeComponent',
-                LogLevel::NOTICE,
-                'NoticeMessage',
-                [],
-                'requestId_notice',
-            ),
-            '[NOTICE] NoticeComponent: NoticeMessage',
-        ];
-
-        yield 'info' => [
-            StandardStream::Out,
-            new LogRecord(
-                'InfoComponent',
-                LogLevel::INFO,
-                'InfoMessage',
-                [],
-                'requestId_info',
-            ),
-            '[INFO] InfoComponent: InfoMessage',
-        ];
-
-        yield 'debug' => [
-            StandardStream::Out,
-            new LogRecord(
-                'DebugComponent',
-                LogLevel::DEBUG,
-                'DebugMessage',
-                [],
-                'requestId_debug',
-            ),
-            '[DEBUG] DebugComponent: DebugMessage',
-        ];
+            foreach (Src\LogLevel::cases() as $logLevel) {
+                yield 'Write ' . $logLevel->value . ' to ' . $streamKey => [
+                    $stream,
+                    new LogRecord(
+                        $logLevel->value . 'Component',
+                        $logLevel->value,
+                        $logLevel->value . 'Message',
+                        [],
+                        'requestId_' . $streamKey,
+                    ),
+                    sprintf(
+                        '[%s] %s: %s',
+                        strtoupper($logLevel->value),
+                        $logLevel->value . 'Component',
+                        $logLevel->value . 'Message',
+                    ),
+                ];
+            }
+        }
     }
 }

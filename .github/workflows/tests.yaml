@@ -28,7 +28,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v${{ matrix.composer-version }}
-          coverage: none
+          coverage: pcov
 
       # Install dependencies
       - name: Install Composer dependencies
@@ -38,7 +38,7 @@ jobs:
 
       # Run tests
       - name: Run tests
-        run: composer test
+        run: composer test:coverage
 
   coverage:
     name: Test coverage
@@ -52,7 +52,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: ${{ matrix.php-version }}
           tools: composer:v2
           coverage: pcov
 
@@ -69,12 +69,12 @@ jobs:
       # Upload artifact
       - name: Fix coverage path
         working-directory: .build/coverage
-        run: sed -i 's#/home/runner/work/typo3-stream-writer/typo3-stream-writer#${{ github.workspace }}#g' clover.xml
+        run: sed -i 's#/home/runner/work/typo3-stream-writer/typo3-stream-writer#${{ github.workspace }}#g' merged.clover.xml
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: .build/coverage/clover.xml
+          path: .build/coverage/merged.clover.xml
           retention-days: 7
 
   coverage-report:
@@ -101,10 +101,10 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{ steps.download.outputs.download-path }}/clover.xml:clover
+            ${{ steps.download.outputs.download-path }}/merged.clover.xml:clover
 
       # Coveralls
       - name: Coveralls report
         uses: coverallsapp/github-action@v2
         with:
-          file: ${{ steps.download.outputs.download-path }}/clover.xml
+          file: ${{ steps.download.outputs.download-path }}/merged.clover.xml

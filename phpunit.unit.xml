@@ -18,6 +18,7 @@
     </php>
   <coverage>
       <report>
+          <php outputFile=".build/coverage/main-process.cov"/>
           <clover outputFile=".build/coverage/clover.xml"/>
           <html outputDirectory=".build/coverage/html"/>
           <text outputFile="php://stdout" showOnlySummary="true"/>

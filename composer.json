@@ -23,6 +23,7 @@
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.11",
 		"phpstan/phpstan-phpunit": "^1.4",
+		"phpunit/php-code-coverage": "^10.1",
 		"phpunit/phpcov": "^9.0",
 		"phpunit/phpunit": "^10.5",
 		"saschaegerer/phpstan-typo3": "^1.10",
@@ -91,9 +92,11 @@
 			"@test:unit"
 		],
 		"test:coverage": [
-			"@test:coverage:unit"
+			"@test:coverage:unit",
+			"@test:coverage:merge"
 		],
+		"test:coverage:merge": "phpcov merge --html .build/coverage/merged_html  --clover .build/coverage/merged.clover.xml --text php://stdout .build/coverage/ ",
 		"test:coverage:unit": "phpunit -c phpunit.unit.xml",
-		"test:unit": "@test:coverage:unit --no-coverage"
+		"test:unit": "@test:coverage:unit"
 	}
 }
