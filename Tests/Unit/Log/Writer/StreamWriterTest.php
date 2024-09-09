@@ -63,6 +63,7 @@ final class StreamWriterTest extends Framework\TestCase
                         $stream,
                         $record,
                         $potentialMaxLevel,
+                        __METHOD__,
                     ),
                 ),
                 // level is within bounds or null
@@ -72,6 +73,7 @@ final class StreamWriterTest extends Framework\TestCase
                         $stream,
                         $record,
                         $potentialMaxLevel,
+                        __METHOD__,
                     ),
                 ),
             };
@@ -81,13 +83,13 @@ final class StreamWriterTest extends Framework\TestCase
     private function writeToStreamInSeparateProcess(
         StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel = Src\LogLevel::EMERGENCY,
+        Src\LogLevel $maxLevel,
+        string $trigger,
     ): string {
         $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
 
-        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel));
+        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger));
 
-        // @todo: ensure this path is included in the coverage report
         $process = new Process([PHP_BINARY, $tempOutputFile]);
         $process->run();
 
@@ -105,11 +107,12 @@ final class StreamWriterTest extends Framework\TestCase
     private function generatePhpScriptForLogWriting(
         StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel = Src\LogLevel::DEBUG,
+        Src\LogLevel $maxLevel,
+        string $trigger,
     ): string {
         $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
         $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
-        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/subprocess_' . uniqid() . '.cov';
+        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
 
         return <<<PHP
             <?php
@@ -132,7 +135,7 @@ final class StreamWriterTest extends Framework\TestCase
                 \$filter
             );
 
-            \$coverage->start('write-log_test');
+            \$coverage->start('{$trigger}');
 
 
             \$logWriter = new StreamWriter(
