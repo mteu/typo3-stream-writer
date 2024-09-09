@@ -28,7 +28,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v${{ matrix.composer-version }}
-          coverage: none
+          coverage: pcov
 
       # Install dependencies
       - name: Install Composer dependencies
