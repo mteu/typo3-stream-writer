@@ -23,7 +23,7 @@
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.11",
 		"phpstan/phpstan-phpunit": "^1.4",
-		"phpunit/php-code-coverage": "^10.1",
+		"phpunit/php-code-coverage": "^11.0",
 		"phpunit/phpcov": "^9.0",
 		"phpunit/phpunit": "^10.5",
 		"saschaegerer/phpstan-typo3": "^1.10",
