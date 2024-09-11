@@ -71,14 +71,29 @@ final class StreamWriter extends AbstractWriter
     /**
      * @param mixed[] $options
      * @return class-string[]
+     * @throws InvalidLogWriterConfigurationException
      */
     private function getIgnoredComponentsOption(array $options): array
     {
         if (array_key_exists('ignoreComponents', $options)) {
-            return $options['ignoreComponents'];
+
+            if (
+                $options['ignoreComponents'] === '' ||
+                $options['ignoreComponents'] === null
+            ) {
+                $this->throwConfigurationException('Missing', 'ignoreComponents', 1722422118);
+            }
         }
 
         return [];
+    }
+
+    private function throwConfigurationException(string $type, string $option, int $code): never
+    {
+        throw new InvalidLogWriterConfigurationException(
+            $type . ' LogWriter configuration option "' . $option . '" for log writer of type "' . __CLASS__ . '"',
+            $code,
+        );
     }
 
     /**
@@ -91,17 +106,11 @@ final class StreamWriter extends AbstractWriter
             $options['outputStream'] === '' ||
             $options['outputStream'] === null
         ) {
-            throw new InvalidLogWriterConfigurationException(
-                'Missing LogWriter configuration option "outputStream" for log writer of type "' . __CLASS__ . '"',
-                1722422118,
-            );
+            $this->throwConfigurationException('Missing', 'outputStream', 1722422117);
         }
 
         if (!$options['outputStream'] instanceof StandardStream) {
-            throw new InvalidLogWriterConfigurationException(
-                'Invalid LogWriter configuration option "' . $options['outputStream'] . '" for log writer of type "' . __CLASS__ . '"',
-                1722422119,
-            );
+            $this->throwConfigurationException('Invalid', 'outputStream', 1722422116);
         }
 
         return $options['outputStream'];

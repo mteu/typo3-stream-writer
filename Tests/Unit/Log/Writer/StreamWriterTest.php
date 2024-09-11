@@ -114,6 +114,17 @@ final class StreamWriterTest extends Framework\TestCase
         $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
         $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
 
+        // data will most likely be set for ExceptionHandlers only
+        $data = [
+            'mode' => $record->getData()['mode'] ?? '',
+            'application_mode' => $record->getData()['application_mode'] ?? '',
+            'exception_class' => $record->getData()['exception_class'] ?? '',
+            'exception_code' => $record->getData()['exception_code'] ?? 0,
+            'file' => $record->getData()['file'] ?? '',
+            'line' => $record->getData()['line'] ?? 0,
+            'message' => $record->getData()['message'] ?? '',
+        ];
+
         return <<<PHP
             <?php
 
@@ -149,7 +160,15 @@ final class StreamWriterTest extends Framework\TestCase
                     '{$record->getComponent()}',
                     '{$record->getLevel()}',
                     '{$record->getMessage()}',
-                    [],
+                    [
+                        'mode' => '{$data['mode']}',
+                        'application_mode' => '{$data['application_mode']}',
+                        'exception_class' => '{$data['exception_class']}',
+                        'exception_code' => '{$data['exception_code']}',
+                        'file' => '{$data['file']}',
+                        'line' => '{$data['line']}',
+                        'message' => '{$data['message']}',
+                    ],
                     '{$record->getRequestId()}',
                 ),
             );
@@ -198,8 +217,8 @@ final class StreamWriterTest extends Framework\TestCase
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter');
-        $this->createWriter(['foo']);
+        self::expectExceptionMessage('Invalid LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter');
+        $this->createWriter(['outputStream' => 'foo']);
     }
 
     #[Framework\Attributes\Test]
@@ -211,11 +230,88 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     #[Framework\Attributes\Test]
-    public function writeLogCreationThrowsExceptionForEmptyOutputStreamValue(): void
+    public function writeLogCreationThrowsExceptionForEmptyValues(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
         self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
         $this->createWriter(['outputStream' => '']);
+
+        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "ignoreComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        $this->createWriter([
+            'outputStream' => StandardStream::Out,
+            'ignoreComponents' => '',
+        ]);
+    }
+
+    #[Framework\Attributes\Test]
+    public function writeLogCreationThrowsExceptionForUnspecifiedIgnoreComponentsValue(): void
+    {
+        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "ignoreComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        $this->createWriter([
+            'outputStream' => StandardStream::Out,
+            'ignoreComponents' => null,
+        ]);
+    }
+
+    #[Framework\Attributes\Test]
+    public function writeLogCreationExtractsStackDateFromExceptionHandler(): void
+    {
+        $data = [
+            'mode' => 'BE',
+            'application_mode' => 'WEB',
+            'exception_class' => 'ExceptionClass',
+            'exception_code' => 'ExceptionCode',
+            'file' => '',
+            'line' => 1,
+            'message' => 'Message',
+        ];
+
+        $record = new LogRecord(
+            'TYPO3.CMS.Core.Error.ExceptionHandlerInterface',
+            Src\LogLevel::ERROR->value,
+            'Foo',
+            $data,
+            'Bar',
+        );
+
+        /**
+         * @var array{
+         *     mode: string,
+         *     application_mode: string,
+         *     exception_class: string,
+         *     exception_code: int,
+         *     file: string,
+         *     line: int,
+         *     message: string,
+         * } $data
+         */
+        $data = $record->getData();
+
+        $expected = sprintf(
+            '[%s] %s: (%s: %s) %s, code %d, file %s, line %d: %s',
+            strtoupper($record->getLevel()),
+            $record->getComponent(),
+            $data['mode'],
+            $data['application_mode'],
+            $data['exception_class'],
+            $data['exception_code'],
+            $data['file'],
+            $data['line'],
+            $data['message'],
+        );
+
+        self::assertSame(
+            $expected,
+            $this->writeToStreamInSeparateProcess(
+                StandardStream::Out,
+                $record,
+                Src\LogLevel::EMERGENCY,
+                __METHOD__,
+            ),
+        );
+
     }
 
     /**
