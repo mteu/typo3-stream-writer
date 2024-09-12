@@ -29,6 +29,7 @@ use mteu\StreamWriter\Log\Writer\StreamWriter;
 use PHPUnit\Framework;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 
@@ -45,7 +46,7 @@ final class StreamWriterTest extends Framework\TestCase
      * @throws \Exception
      */
     #[Framework\Attributes\Test]
-    #[Framework\Attributes\DataProvider('generateLogRecordsForStandardStream')]
+    #[Framework\Attributes\DataProvider('provideLogRecordsForStandardStream')]
     public function writeLogRespectsMaximumLevelBoundary(
         StandardStream $stream,
         LogRecord $record,
@@ -213,6 +214,63 @@ final class StreamWriterTest extends Framework\TestCase
         }
     }
 
+    /**
+     * @param string|class-string $className
+     * @throws InvalidLogWriterConfigurationException
+     */
+    #[Framework\Attributes\Test]
+    #[Framework\Attributes\DataProvider('provideClassNames')]
+    public function writeLogThrowsExceptionForInvalidTypesInIgnoringSpecifiedComponents(
+        string $className,
+    ): void {
+        $this->expectExceptionCode(1726170401);
+        $this->createWriter([
+            'outputStream' => StandardStream::Out,
+            'ignoredComponents' => [
+                $className,
+                '',
+                null,
+                0,
+                new class () {},
+            ],
+        ]);
+    }
+
+    #[Framework\Attributes\Test]
+    #[Framework\Attributes\DataProvider('provideClassNames')]
+    public function writeLogCreationUnderstandsDifferentClassNameNotations(
+        string $className,
+    ): void {
+        $ignorableComponents = [
+            $className,
+        ];
+
+        $writer = $this->createWriter([
+            'outputStream' => StandardStream::Out,
+            'ignoredComponents' => $ignorableComponents,
+        ]);
+
+        $writerOption = $writer->getOption('ignoredComponents');
+
+        // @todo: improve this
+        if ($className === 'TYPO3.CMS.Core.Authentication.BackendUserAuthentication') {
+            self::assertNotEquals($ignorableComponents, $writerOption);
+        } else {
+            self::assertSame($ignorableComponents, $writerOption);
+        }
+
+    }
+
+    #[Framework\Attributes\Test]
+    #[Framework\Attributes\DataProvider('provideClassNames')]
+    public function writeLogCreationSucceedsInIgnoringSpecifiedComponents(
+        string $className,
+    ): void {
+
+        // @todo: implement this test .. until then:
+        $this->expectNotToPerformAssertions();;
+    }
+
     #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
@@ -237,21 +295,23 @@ final class StreamWriterTest extends Framework\TestCase
         $this->createWriter(['outputStream' => '']);
 
         self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "ignoreComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        self::expectExceptionMessage('Missing LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
         $this->createWriter([
             'outputStream' => StandardStream::Out,
-            'ignoreComponents' => '',
+            'ignoredComponents' => '',
         ]);
     }
 
     #[Framework\Attributes\Test]
-    public function writeLogCreationThrowsExceptionForUnspecifiedIgnoreComponentsValue(): void
+    public function writeLogCreationThrowsExceptionForUnspecifiedignoredComponentsValue(): void
     {
         self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "ignoreComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        self::expectExceptionMessage(
+            'Invalid LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"'
+        );
         $this->createWriter([
             'outputStream' => StandardStream::Out,
-            'ignoreComponents' => null,
+            'ignoredComponents' => null,
         ]);
     }
 
@@ -317,7 +377,7 @@ final class StreamWriterTest extends Framework\TestCase
     /**
      * @return \Generator<string, array{StandardStream, LogRecord, string}>
      */
-    public static function generateLogRecordsForStandardStream(): \Generator
+    public static function provideLogRecordsForStandardStream(): \Generator
     {
         foreach (StandardStream::cases() as $stream) {
             $streamKey = strtolower($stream->name);
@@ -341,5 +401,16 @@ final class StreamWriterTest extends Framework\TestCase
                 ];
             }
         }
+    }
+
+    /**
+     * @return \Generator<string, array{string|class-string}>
+     */
+    public static function provideClassNames(): \Generator
+    {
+        yield 'constant' => [BackendUserAuthentication::class];
+        yield 'fqcn' => ['TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication'];
+        yield 'simplySlashedClassName' => ['TYPO3\CMS\Core\Authentication\BackendUserAuthentication'];
+        yield 'fullyDottedClassName' => ['TYPO3.CMS.Core.Authentication.BackendUserAuthentication'];
     }
 }

@@ -45,7 +45,9 @@ $configuration['parameters']['docblock'] = [
 $configuration['parameters']['ergebnis'] = [
     'noExtends' => [
         'classesAllowedToBeExtended' => [
+            Exception::class,
             \TYPO3\CMS\Core\Log\Writer\AbstractWriter::class,
+            mteu\StreamWriter\Log\Exception\Exception::class,
         ],
     ],
 ];

@@ -47,9 +47,10 @@ $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
     \Psr\Log\LogLevel::DEBUG => [
         StreamWriter::class => [
             'outputStream' => StandardStream::Out,
-            'ignoreComponents' => [
-                'TYPO3.CMS.Core.Authentication.BackendUserAuthentication',
+            'ignoredComponents' => [
+                'TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication',
                 'TYPO3.CMS.Frontend.Authentication.FrontendUserAuthentication',
+
             ],
             'maxLevel' => Psr\Log\LogLevel::WARNING,
         ],
