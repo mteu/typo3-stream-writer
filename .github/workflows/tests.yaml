@@ -17,10 +17,10 @@ jobs:
         php-version: ["8.1", "8.2", "8.3"]
         composer-version: ["latest"]
         dependencies: ["lowest", "highest"]
-        typo3-version: ["12.4", "13.2", "13.3.x-dev"]
+        typo3-version: ["12.4", "13.2"]
         exclude:
           - php-version: "8.1"
-            typo3-version: ["13.2", "13.3.x-dev"]
+            typo3-version: "13.2"
     steps:
       - uses: actions/checkout@v4
         with:
