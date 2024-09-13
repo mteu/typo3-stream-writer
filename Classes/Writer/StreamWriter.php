@@ -21,11 +21,11 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Writer;
+namespace mteu\StreamWriter\Writer;
 
-use mteu\StreamWriter\Log\Config\StandardStream;
-use mteu\StreamWriter\Log\LogLevel;
-use mteu\StreamWriter\Log\Exception\InvalidLogWriterConfigurationException;
+use mteu\StreamWriter\Config\LogLevel;
+use mteu\StreamWriter\Config\StandardStream;
+use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;

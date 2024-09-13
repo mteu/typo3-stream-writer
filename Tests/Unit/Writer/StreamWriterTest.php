@@ -21,16 +21,13 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Tests\Unit\Log\Writer;
+namespace mteu\StreamWriter\Tests\Unit\Writer;
 
-use mteu\StreamWriter\Log as Src;
-use mteu\StreamWriter\Log\Config\StandardStream;
-use mteu\StreamWriter\Log\Writer\StreamWriter;
+use mteu\StreamWriter as Src;
 use PHPUnit\Framework;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use mteu\StreamWriter\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
@@ -48,14 +45,14 @@ final class StreamWriterTest extends Framework\TestCase
     #[Framework\Attributes\Test]
     #[Framework\Attributes\DataProvider('provideLogRecordsForStandardStream')]
     public function writeLogRespectsMaximumLevelBoundary(
-        StandardStream $stream,
+        Src\Config\StandardStream $stream,
         LogRecord $record,
         string $expected,
     ): void {
 
-        foreach (Src\LogLevel::cases() as $potentialMaxLevel) {
+        foreach (Src\Config\LogLevel::cases() as $potentialMaxLevel) {
 
-            $recordLevelPriority = \mteu\StreamWriter\Log\LogLevel::tryFrom($record->getLevel())?->priority();
+            $recordLevelPriority = Src\Config\LogLevel::tryFrom($record->getLevel())?->priority();
 
             match (true) {
                 // level is outside bounds
@@ -82,9 +79,9 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     private function writeToStreamInSeparateProcess(
-        StandardStream $stream,
+        Src\Config\StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel,
+        Src\Config\LogLevel $maxLevel,
         string $trigger,
     ): string {
         $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
@@ -98,7 +95,7 @@ final class StreamWriterTest extends Framework\TestCase
             throw new ProcessFailedException($process);
         }
 
-        $output = $stream === StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
+        $output = $stream === Src\Config\StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
 
         unlink($tempOutputFile);
 
@@ -106,14 +103,14 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     private function generatePhpScriptForLogWriting(
-        StandardStream $stream,
+        Src\Config\StandardStream $stream,
         LogRecord $record,
-        Src\LogLevel $maxLevel,
+        Src\Config\LogLevel $maxLevel,
         string $trigger,
     ): string {
-        $autoload = dirname(__DIR__, 4) . '/.build/vendor/autoload.php';
-        $classFileName = dirname(__DIR__, 4) . '/Classes/Log/Writer/StreamWriter.php';
-        $coverageFile =  dirname(__DIR__, 4) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
+        $autoload = dirname(__DIR__, 3) . '/.build/vendor/autoload.php';
+        $classFileName = dirname(__DIR__, 3) . '/Classes/Writer/StreamWriter.php';
+        $coverageFile =  dirname(__DIR__, 3) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
 
         // data will most likely be set for ExceptionHandlers only
         $data = [
@@ -131,8 +128,8 @@ final class StreamWriterTest extends Framework\TestCase
 
             require_once '$autoload';
 
-            use mteu\StreamWriter\Log\Config\StandardStream;
-            use mteu\StreamWriter\Log\Writer\StreamWriter;
+            use mteu\StreamWriter\Config\StandardStream;
+            use mteu\StreamWriter\Writer\StreamWriter;
             use SebastianBergmann\CodeCoverage\Filter;
             use SebastianBergmann\CodeCoverage\Driver\Selector;
             use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -181,8 +178,8 @@ final class StreamWriterTest extends Framework\TestCase
 
     /**
      * @param mixed[] $options
-     * @return StreamWriter
-     * @throws InvalidLogWriterConfigurationException
+     * @return Src\Writer\StreamWriter
+     * @throws Src\Exception\InvalidLogWriterConfigurationException
      */
     private function createWriter(array $options = []): Src\Writer\StreamWriter
     {
@@ -205,7 +202,7 @@ final class StreamWriterTest extends Framework\TestCase
     #[Framework\Attributes\Test]
     public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
     {
-        foreach (StandardStream::cases() as $standardStream) {
+        foreach (Src\Config\StandardStream::cases() as $standardStream) {
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             self::assertInstanceOf(
                 Src\Writer\StreamWriter::class,
@@ -216,7 +213,7 @@ final class StreamWriterTest extends Framework\TestCase
 
     /**
      * @param string|class-string $className
-     * @throws InvalidLogWriterConfigurationException
+     * @throws Src\Exception\InvalidLogWriterConfigurationException
      */
     #[Framework\Attributes\Test]
     #[Framework\Attributes\DataProvider('provideClassNames')]
@@ -225,7 +222,7 @@ final class StreamWriterTest extends Framework\TestCase
     ): void {
         $this->expectExceptionCode(1726170401);
         $this->createWriter([
-            'outputStream' => StandardStream::Out,
+            'outputStream' => Src\Config\StandardStream::Out,
             'ignoredComponents' => [
                 $className,
                 '',
@@ -246,7 +243,7 @@ final class StreamWriterTest extends Framework\TestCase
         ];
 
         $writer = $this->createWriter([
-            'outputStream' => StandardStream::Out,
+            'outputStream' => Src\Config\StandardStream::Out,
             'ignoredComponents' => $ignorableComponents,
         ]);
 
@@ -268,49 +265,49 @@ final class StreamWriterTest extends Framework\TestCase
     ): void {
 
         // @todo: implement this test .. until then:
-        $this->expectNotToPerformAssertions();;
+        $this->expectNotToPerformAssertions();
     }
 
     #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForInvalidConfiguration(): void
     {
-        self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Invalid LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter');
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Invalid LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Writer\StreamWriter');
         $this->createWriter(['outputStream' => 'foo']);
     }
 
     #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForUnsetOutputStreamValue(): void
     {
-        self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Writer\StreamWriter"');
         $this->createWriter(['outputStream' => null]);
     }
 
     #[Framework\Attributes\Test]
     public function writeLogCreationThrowsExceptionForEmptyValues(): void
     {
-        self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "outputStream" for log writer of type "mteu\StreamWriter\Writer\StreamWriter"');
         $this->createWriter(['outputStream' => '']);
 
-        self::expectException(InvalidLogWriterConfigurationException::class);
-        self::expectExceptionMessage('Missing LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"');
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage('Missing LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Writer\StreamWriter"');
         $this->createWriter([
-            'outputStream' => StandardStream::Out,
+            'outputStream' => Src\Config\StandardStream::Out,
             'ignoredComponents' => '',
         ]);
     }
 
     #[Framework\Attributes\Test]
-    public function writeLogCreationThrowsExceptionForUnspecifiedignoredComponentsValue(): void
+    public function writeLogCreationThrowsExceptionForUnspecifiedIgnoredComponentsValue(): void
     {
-        self::expectException(InvalidLogWriterConfigurationException::class);
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
         self::expectExceptionMessage(
-            'Invalid LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Log\Writer\StreamWriter"'
+            'Invalid LogWriter configuration option "ignoredComponents" for log writer of type "mteu\StreamWriter\Writer\StreamWriter"'
         );
         $this->createWriter([
-            'outputStream' => StandardStream::Out,
+            'outputStream' => Src\Config\StandardStream::Out,
             'ignoredComponents' => null,
         ]);
     }
@@ -330,7 +327,7 @@ final class StreamWriterTest extends Framework\TestCase
 
         $record = new LogRecord(
             'TYPO3.CMS.Core.Error.ExceptionHandlerInterface',
-            Src\LogLevel::ERROR->value,
+            Src\Config\LogLevel::ERROR->value,
             'Foo',
             $data,
             'Bar',
@@ -365,9 +362,9 @@ final class StreamWriterTest extends Framework\TestCase
         self::assertSame(
             $expected,
             $this->writeToStreamInSeparateProcess(
-                StandardStream::Out,
+                Src\Config\StandardStream::Out,
                 $record,
-                Src\LogLevel::EMERGENCY,
+                Src\Config\LogLevel::EMERGENCY,
                 __METHOD__,
             ),
         );
@@ -375,14 +372,14 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     /**
-     * @return \Generator<string, array{StandardStream, LogRecord, string}>
+     * @return \Generator<string, array{Src\Config\StandardStream, LogRecord, string}>
      */
     public static function provideLogRecordsForStandardStream(): \Generator
     {
-        foreach (StandardStream::cases() as $stream) {
+        foreach (Src\Config\StandardStream::cases() as $stream) {
             $streamKey = strtolower($stream->name);
 
-            foreach (Src\LogLevel::cases() as $logLevel) {
+            foreach (Src\Config\LogLevel::cases() as $logLevel) {
                 yield 'Write ' . $logLevel->value . ' to ' . $streamKey => [
                     $stream,
                     new LogRecord(

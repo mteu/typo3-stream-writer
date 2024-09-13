@@ -21,7 +21,7 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Exception;
+namespace mteu\StreamWriter\Exception;
 
 /**
  * Exception.
@@ -29,5 +29,4 @@ namespace mteu\StreamWriter\Log\Exception;
  * @author Martin Adler <martin.adler@init.de>
  * @license GPL-3.0-or-later
  */
-
 abstract class Exception extends \Exception {}

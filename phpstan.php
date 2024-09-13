@@ -47,7 +47,7 @@ $configuration['parameters']['ergebnis'] = [
         'classesAllowedToBeExtended' => [
             Exception::class,
             \TYPO3\CMS\Core\Log\Writer\AbstractWriter::class,
-            mteu\StreamWriter\Log\Exception\Exception::class,
+            mteu\StreamWriter\Exception\Exception::class,
         ],
     ],
 ];
