@@ -30,10 +30,11 @@ Configure your extension or TYPO3 instance to use the new writer.
 
 declare(strict_types=1);
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Log\LogLevel;
-use mteu\StreamWriter\Log\Config\StandardStream;
-use mteu\StreamWriter\Log\Writer\StreamWriter;
+use mteu\StreamWriter\Config\StandardStream;
+use mteu\StreamWriter\Writer\StreamWriter;
 
 
 defined('TYPO3') or die();
@@ -42,6 +43,9 @@ $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
      \Psr\Log\LogLevel::ERROR => [
         StreamWriter::class => [
             'outputStream' => StandardStream::Error,
+            'ignoredComponents' => [
+                BackendUserAuthentication::class,
+            ]
         ],
     ],
     \Psr\Log\LogLevel::DEBUG => [
