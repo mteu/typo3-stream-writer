@@ -30,7 +30,7 @@ use PHPUnit\Framework;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
+use mteu\StreamWriter\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**

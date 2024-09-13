@@ -29,4 +29,4 @@ namespace mteu\StreamWriter\Log\Exception;
  * @author Martin Adler <martin.adler@init.de>
  * @license GPL-3.0-or-later
  */
-final class InvalidOptionException extends Exception {}
+final class InvalidLogWriterOptionException extends Exception {}

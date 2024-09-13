@@ -25,7 +25,7 @@ namespace mteu\StreamWriter\Log\Writer;
 
 use mteu\StreamWriter\Log\Config\StandardStream;
 use mteu\StreamWriter\Log\LogLevel;
-use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
+use mteu\StreamWriter\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;
