@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the TYPO3 CMS extension "mteu/typo3-stream-writer".
+ * This file is part of the TYPO3 CMS extensions "mteu/typo3-stream-writer".
  *
  * Copyright (C) 2024 Martin Adler <mteu@mailbox.org>
  *
@@ -21,33 +21,16 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log;
+namespace mteu\StreamWriter\Config;
 
 /**
- * @codeCoverageIgnore
+ * StandardStream.
+ *
+ * @author Martin Adler <mteu@mailbox.org>
+ * @license GPL-3.0-or-later
  */
-enum LogLevel: string
+enum StandardStream: string
 {
-    case ALERT     = 'alert';
-    case CRITICAL  = 'critical';
-    case DEBUG     = 'debug';
-    case EMERGENCY = 'emergency';
-    case ERROR     = 'error';
-    case INFO      = 'info';
-    case NOTICE    = 'notice';
-    case WARNING   = 'warning';
-
-    public function priority(): int
-    {
-        return match ($this) {
-            self::EMERGENCY => 8,
-            self::ALERT => 7,
-            self::CRITICAL => 6,
-            self::ERROR => 5,
-            self::WARNING => 4,
-            self::NOTICE => 3,
-            self::INFO => 2,
-            self::DEBUG => 1,
-        };
-    }
+    case Out = 'php://stdout';
+    case Error = 'php://stderr';
 }

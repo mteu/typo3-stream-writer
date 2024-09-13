@@ -21,16 +21,12 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Config;
+namespace mteu\StreamWriter\Exception;
 
 /**
- * StandardStream.
+ * Exception.
  *
- * @author Martin Adler <mteu@mailbox.org>
+ * @author Martin Adler <martin.adler@init.de>
  * @license GPL-3.0-or-later
  */
-enum StandardStream: string
-{
-    case Out = 'php://stdout';
-    case Error = 'php://stderr';
-}
+abstract class Exception extends \Exception {}

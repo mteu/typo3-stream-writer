@@ -21,11 +21,11 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Writer;
+namespace mteu\StreamWriter\Writer;
 
-use mteu\StreamWriter\Log\Config\StandardStream;
-use mteu\StreamWriter\Log\LogLevel;
-use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
+use mteu\StreamWriter\Config\LogLevel;
+use mteu\StreamWriter\Config\StandardStream;
+use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;
@@ -69,23 +69,61 @@ final class StreamWriter extends AbstractWriter
     }
 
     /**
+     * @return LogLevel|StandardStream|class-string[]
+     * @throws InvalidLogWriterConfigurationException
+     */
+    public function getOption(string $option): array|LogLevel|StandardStream
+    {
+        return match ($option) {
+            'outputStream' => $this->outputStream,
+            'maxLevel' => $this->maxLevel,
+            'ignoredComponents' => $this->ignoredComponents,
+            default => throw new InvalidLogWriterConfigurationException(
+                'Option ' . $option . ' does not exist.',
+                1726173519
+            ),
+        };
+    }
+
+    /**
      * @param mixed[] $options
      * @return class-string[]
      * @throws InvalidLogWriterConfigurationException
      */
     private function getIgnoredComponentsOption(array $options): array
     {
-        if (array_key_exists('ignoreComponents', $options)) {
+        $classes = [];
 
-            if (
-                $options['ignoreComponents'] === '' ||
-                $options['ignoreComponents'] === null
-            ) {
-                $this->throwConfigurationException('Missing', 'ignoreComponents', 1722422118);
+        if (array_key_exists('ignoredComponents', $options)) {
+
+            if (!is_array($options['ignoredComponents'])) {
+                $this->throwConfigurationException('Invalid', 'ignoredComponents', 1722422118);
+            }
+
+            if ($options['ignoredComponents'] === []) {
+                return [];
+            }
+
+            foreach ($options['ignoredComponents'] as $component) {
+
+                if (!is_string($component)) {
+                    throw new InvalidLogWriterConfigurationException(
+                        'Invalid \'ignoredComponents option type\' for log writer of type "' . __CLASS__ . '"',
+                        1726170401,
+                    );
+                }
+
+                // transposes TYPO3's dotted fqcn to actual fqcn
+                $component = str_replace('.', '\\', $component);
+
+                // we're silently accepting and ignoring a potential misconfiguration for invalid class references here
+                if (class_exists($component)) {
+                    $classes[] = $component;
+                }
             }
         }
 
-        return [];
+        return $classes;
     }
 
     private function throwConfigurationException(string $type, string $option, int $code): never
@@ -201,7 +239,7 @@ final class StreamWriter extends AbstractWriter
      */
     private function determineMaximalLevel(array $options): LogLevel
     {
-        $default = LogLevel::CRITICAL;
+        $default = LogLevel::Critical;
 
         if (!array_key_exists('maxLevel', $options)) {
             return $default;

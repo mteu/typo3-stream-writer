@@ -41,7 +41,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"mteu\\StreamWriter\\Tests\\": "Tests/"
+			"mteu\\StreamWriter\\Tests\\Unit\\": "Tests/Unit/"
 		}
 	},
 	"config": {
