@@ -39,9 +39,26 @@ use TYPO3\CMS\Core\Log\LogRecord;
 #[Framework\Attributes\CoversClass(Src\Writer\StreamWriter::class)]
 final class StreamWriterTest extends Framework\TestCase
 {
-    /**
-     * @throws \Exception
-     */
+    #[Framework\Attributes\Test]
+    public function writeLogCreationSucceedsWithEmptyConfiguration(): void
+    {
+        $subject = $this->createWriter();
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+        self::assertInstanceOf(Src\Writer\StreamWriter::class, $subject);
+    }
+
+    #[Framework\Attributes\Test]
+    public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
+    {
+        foreach (Src\Config\StandardStream::cases() as $standardStream) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+            self::assertInstanceOf(
+                Src\Writer\StreamWriter::class,
+                $this->createWriter(['outputStream' => $standardStream])
+            );
+        }
+    }
+
     #[Framework\Attributes\Test]
     #[Framework\Attributes\DataProvider('provideLogRecordsForStandardStream')]
     public function writeLogRespectsMaximumLevelBoundary(
@@ -51,7 +68,6 @@ final class StreamWriterTest extends Framework\TestCase
     ): void {
 
         foreach (Src\Config\LogLevel::cases() as $potentialMaxLevel) {
-
             $recordLevelPriority = Src\Config\LogLevel::tryFrom($record->getLevel())?->priority();
 
             match (true) {
@@ -75,139 +91,6 @@ final class StreamWriterTest extends Framework\TestCase
                     ),
                 ),
             };
-        }
-    }
-
-    private function writeToStreamInSeparateProcess(
-        Src\Config\StandardStream $stream,
-        LogRecord $record,
-        Src\Config\LogLevel $maxLevel,
-        string $trigger,
-    ): string {
-        $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
-
-        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger));
-
-        $process = new Process([PHP_BINARY, $tempOutputFile]);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $output = $stream === Src\Config\StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
-
-        unlink($tempOutputFile);
-
-        return $output;
-    }
-
-    private function generatePhpScriptForLogWriting(
-        Src\Config\StandardStream $stream,
-        LogRecord $record,
-        Src\Config\LogLevel $maxLevel,
-        string $trigger,
-    ): string {
-        $autoload = dirname(__DIR__, 3) . '/.build/vendor/autoload.php';
-        $classFileName = dirname(__DIR__, 3) . '/Classes/Writer/StreamWriter.php';
-        $coverageFile =  dirname(__DIR__, 3) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
-
-        // data will most likely be set for ExceptionHandlers only
-        $data = [
-            'mode' => $record->getData()['mode'] ?? '',
-            'application_mode' => $record->getData()['application_mode'] ?? '',
-            'exception_class' => $record->getData()['exception_class'] ?? '',
-            'exception_code' => $record->getData()['exception_code'] ?? 0,
-            'file' => $record->getData()['file'] ?? '',
-            'line' => $record->getData()['line'] ?? 0,
-            'message' => $record->getData()['message'] ?? '',
-        ];
-
-        return <<<PHP
-            <?php
-
-            require_once '$autoload';
-
-            use mteu\StreamWriter\Config\StandardStream;
-            use mteu\StreamWriter\Writer\StreamWriter;
-            use SebastianBergmann\CodeCoverage\Filter;
-            use SebastianBergmann\CodeCoverage\Driver\Selector;
-            use SebastianBergmann\CodeCoverage\CodeCoverage;
-            use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
-            use TYPO3\CMS\Core\Log\LogRecord;
-
-            \$filter = new Filter;
-            \$filter->includeFiles(['$classFileName']);
-
-            \$coverage = new CodeCoverage(
-                (new Selector)->forLineCoverage(\$filter),
-                \$filter
-            );
-
-            \$coverage->start('{$trigger}');
-
-
-            \$logWriter = new StreamWriter(
-                [
-                    'outputStream' => StandardStream::from('{$stream->value}'),
-                    'maxLevel' => '{$maxLevel->value}',
-                ],
-            );
-            \$logWriter->writeLog(
-                new LogRecord(
-                    '{$record->getComponent()}',
-                    '{$record->getLevel()}',
-                    '{$record->getMessage()}',
-                    [
-                        'mode' => '{$data['mode']}',
-                        'application_mode' => '{$data['application_mode']}',
-                        'exception_class' => '{$data['exception_class']}',
-                        'exception_code' => '{$data['exception_code']}',
-                        'file' => '{$data['file']}',
-                        'line' => '{$data['line']}',
-                        'message' => '{$data['message']}',
-                    ],
-                    '{$record->getRequestId()}',
-                ),
-            );
-
-            \$coverage->stop();
-            (new PhpReport)->process(\$coverage, '$coverageFile');
-        PHP;
-    }
-
-    /**
-     * @param mixed[] $options
-     * @return Src\Writer\StreamWriter
-     * @throws Src\Exception\InvalidLogWriterConfigurationException
-     */
-    private function createWriter(array $options = []): Src\Writer\StreamWriter
-    {
-        if ($options === []) {
-            return new Src\Writer\StreamWriter();
-        }
-
-        /** @phpstan-ignore argument.type */
-        return new Src\Writer\StreamWriter($options);
-    }
-
-    #[Framework\Attributes\Test]
-    public function writeLogCreationSucceedsWithEmptyConfiguration(): void
-    {
-        $subject = $this->createWriter();
-        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-        self::assertInstanceOf(Src\Writer\StreamWriter::class, $subject);
-    }
-
-    #[Framework\Attributes\Test]
-    public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
-    {
-        foreach (Src\Config\StandardStream::cases() as $standardStream) {
-            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-            self::assertInstanceOf(
-                Src\Writer\StreamWriter::class,
-                $this->createWriter(['outputStream' => $standardStream])
-            );
         }
     }
 
@@ -258,14 +141,27 @@ final class StreamWriterTest extends Framework\TestCase
 
     }
 
+    /**
+     * @param class-string $className
+     */
     #[Framework\Attributes\Test]
     #[Framework\Attributes\DataProvider('provideClassNames')]
     public function writeLogCreationSucceedsInIgnoringSpecifiedComponents(
         string $className,
     ): void {
-
-        // @todo: implement this test .. until then:
-        $this->expectNotToPerformAssertions();
+        self::assertEmpty(
+            $this->writeToStreamInSeparateProcess(
+                Src\Config\StandardStream::Out,
+                new LogRecord(
+                    BackendUserAuthentication::class,
+                    Src\Config\LogLevel::ERROR->value,
+                    'Foo',
+                ),
+                Src\Config\LogLevel::EMERGENCY,
+                __METHOD__,
+                $className,
+            ),
+        );
     }
 
     #[Framework\Attributes\Test]
@@ -369,6 +265,124 @@ final class StreamWriterTest extends Framework\TestCase
             ),
         );
 
+    }
+
+    private function writeToStreamInSeparateProcess(
+        Src\Config\StandardStream $stream,
+        LogRecord $record,
+        Src\Config\LogLevel $maxLevel,
+        string $trigger,
+        string $ignoredComponent = '',
+    ): string {
+        $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
+
+        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger, $ignoredComponent));
+
+        $process = new Process([PHP_BINARY, $tempOutputFile]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $output = $stream === Src\Config\StandardStream::Out ? trim($process->getOutput()) : trim($process->getErrorOutput());
+
+        unlink($tempOutputFile);
+
+        return $output;
+    }
+
+    private function generatePhpScriptForLogWriting(
+        Src\Config\StandardStream $stream,
+        LogRecord $record,
+        Src\Config\LogLevel $maxLevel,
+        string $trigger,
+        string $ignoredComponent = '',
+    ): string {
+        $autoload = dirname(__DIR__, 3) . '/.build/vendor/autoload.php';
+        $classFileName = dirname(__DIR__, 3) . '/Classes/Writer/StreamWriter.php';
+        $coverageFile =  dirname(__DIR__, 3) . '/.build/coverage/sub-process_' . uniqid() . '.cov';
+
+        // data will most likely be set for ExceptionHandlers only
+        $data = [
+            'mode' => $record->getData()['mode'] ?? '',
+            'application_mode' => $record->getData()['application_mode'] ?? '',
+            'exception_class' => $record->getData()['exception_class'] ?? '',
+            'exception_code' => $record->getData()['exception_code'] ?? 0,
+            'file' => $record->getData()['file'] ?? '',
+            'line' => $record->getData()['line'] ?? 0,
+            'message' => $record->getData()['message'] ?? '',
+        ];
+
+        return <<<PHP
+            <?php
+
+            require_once '$autoload';
+
+            use mteu\StreamWriter\Config\StandardStream;
+            use mteu\StreamWriter\Writer\StreamWriter;
+            use SebastianBergmann\CodeCoverage\Filter;
+            use SebastianBergmann\CodeCoverage\Driver\Selector;
+            use SebastianBergmann\CodeCoverage\CodeCoverage;
+            use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
+            use TYPO3\CMS\Core\Log\LogRecord;
+
+            \$filter = new Filter;
+            \$filter->includeFiles(['$classFileName']);
+
+            \$coverage = new CodeCoverage(
+                (new Selector)->forLineCoverage(\$filter),
+                \$filter
+            );
+
+            \$coverage->start('{$trigger}');
+
+
+            \$logWriter = new StreamWriter(
+                [
+                    'outputStream' => StandardStream::from('{$stream->value}'),
+                    'maxLevel' => '{$maxLevel->value}',
+                    'ignoredComponents' => [
+                        '{$ignoredComponent}'
+                    ],
+                ],
+            );
+            \$logWriter->writeLog(
+                new LogRecord(
+                    '{$record->getComponent()}',
+                    '{$record->getLevel()}',
+                    '{$record->getMessage()}',
+                    [
+                        'mode' => '{$data['mode']}',
+                        'application_mode' => '{$data['application_mode']}',
+                        'exception_class' => '{$data['exception_class']}',
+                        'exception_code' => '{$data['exception_code']}',
+                        'file' => '{$data['file']}',
+                        'line' => '{$data['line']}',
+                        'message' => '{$data['message']}',
+                    ],
+                    '{$record->getRequestId()}',
+                ),
+            );
+
+            \$coverage->stop();
+            (new PhpReport)->process(\$coverage, '$coverageFile');
+        PHP;
+    }
+
+    /**
+     * @param mixed[] $options
+     * @return Src\Writer\StreamWriter
+     * @throws Src\Exception\InvalidLogWriterConfigurationException
+     */
+    private function createWriter(array $options = []): Src\Writer\StreamWriter
+    {
+        if ($options === []) {
+            return new Src\Writer\StreamWriter();
+        }
+
+        /** @phpstan-ignore argument.type */
+        return new Src\Writer\StreamWriter($options);
     }
 
     /**
