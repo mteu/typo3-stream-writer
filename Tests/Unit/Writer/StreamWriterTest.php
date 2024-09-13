@@ -25,6 +25,7 @@ namespace mteu\StreamWriter\Tests\Unit\Writer;
 
 use mteu\StreamWriter as Src;
 use PHPUnit\Framework;
+use Psr\Log\LogLevel;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -141,6 +142,32 @@ final class StreamWriterTest extends Framework\TestCase
 
     }
 
+    #[Framework\Attributes\Test]
+    public function writeLogOptionsAreCorrectlySetToTheWriter(
+    ): void {
+        $writer = $this->createWriter([
+            'outputStream' => Src\Config\StandardStream::Out,
+            'ignoredComponents' => [],
+        ]);
+        self::assertEquals(Src\Config\StandardStream::Out, $writer->getOption('outputStream'));
+        self::assertEquals([], $writer->getOption('ignoredComponents'));
+
+        $writer = $this->createWriter([
+            'outputStream' => Src\Config\StandardStream::Error,
+            'maxLevel' => LogLevel::ERROR,
+        ]);
+        self::assertEquals(Src\Config\LogLevel::Error, $writer->getOption('maxLevel'));
+
+        // @todo: move to separate test
+        // wrong maxLevel or type defaults Src\Config\LogLevel::CRITICAL
+        $writer = $this->createWriter([
+            'outputStream' => Src\Config\StandardStream::Error,
+            'maxLevel' => 'Error',
+        ]);
+        self::assertEquals(Src\Config\StandardStream::Error, $writer->getOption('outputStream'));
+        self::assertEquals(Src\Config\LogLevel::Critical, $writer->getOption('maxLevel'));
+    }
+
     /**
      * @param class-string $className
      */
@@ -154,10 +181,10 @@ final class StreamWriterTest extends Framework\TestCase
                 Src\Config\StandardStream::Out,
                 new LogRecord(
                     BackendUserAuthentication::class,
-                    Src\Config\LogLevel::ERROR->value,
+                    Src\Config\LogLevel::Error->value,
                     'Foo',
                 ),
-                Src\Config\LogLevel::EMERGENCY,
+                Src\Config\LogLevel::Emergency,
                 __METHOD__,
                 $className,
             ),
@@ -223,7 +250,7 @@ final class StreamWriterTest extends Framework\TestCase
 
         $record = new LogRecord(
             'TYPO3.CMS.Core.Error.ExceptionHandlerInterface',
-            Src\Config\LogLevel::ERROR->value,
+            Src\Config\LogLevel::Error->value,
             'Foo',
             $data,
             'Bar',
@@ -260,7 +287,7 @@ final class StreamWriterTest extends Framework\TestCase
             $this->writeToStreamInSeparateProcess(
                 Src\Config\StandardStream::Out,
                 $record,
-                Src\Config\LogLevel::EMERGENCY,
+                Src\Config\LogLevel::Emergency,
                 __METHOD__,
             ),
         );

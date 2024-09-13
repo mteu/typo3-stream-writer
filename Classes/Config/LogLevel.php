@@ -28,26 +28,26 @@ namespace mteu\StreamWriter\Config;
  */
 enum LogLevel: string
 {
-    case ALERT     = 'alert';
-    case CRITICAL  = 'critical';
-    case DEBUG     = 'debug';
-    case EMERGENCY = 'emergency';
-    case ERROR     = 'error';
-    case INFO      = 'info';
-    case NOTICE    = 'notice';
-    case WARNING   = 'warning';
+    case Alert     = 'alert';
+    case Critical  = 'critical';
+    case Debug     = 'debug';
+    case Emergency = 'emergency';
+    case Error     = 'error';
+    case Info      = 'info';
+    case Notice    = 'notice';
+    case Warning   = 'warning';
 
     public function priority(): int
     {
         return match ($this) {
-            self::EMERGENCY => 8,
-            self::ALERT => 7,
-            self::CRITICAL => 6,
-            self::ERROR => 5,
-            self::WARNING => 4,
-            self::NOTICE => 3,
-            self::INFO => 2,
-            self::DEBUG => 1,
+            self::Emergency => 8,
+            self::Alert => 7,
+            self::Critical => 6,
+            self::Error => 5,
+            self::Warning => 4,
+            self::Notice => 3,
+            self::Info => 2,
+            self::Debug => 1,
         };
     }
 }

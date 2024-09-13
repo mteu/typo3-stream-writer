@@ -239,7 +239,7 @@ final class StreamWriter extends AbstractWriter
      */
     private function determineMaximalLevel(array $options): LogLevel
     {
-        $default = LogLevel::CRITICAL;
+        $default = LogLevel::Critical;
 
         if (!array_key_exists('maxLevel', $options)) {
             return $default;
