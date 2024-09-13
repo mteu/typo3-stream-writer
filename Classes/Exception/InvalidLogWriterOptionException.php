@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace mteu\StreamWriter\Exception;
 
 /**
- * InvalidOptionException.
+ * InvalidLogWriterOptionException.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later

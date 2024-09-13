@@ -26,6 +26,7 @@ namespace mteu\StreamWriter\Writer;
 use mteu\StreamWriter\Config\LogLevel;
 use mteu\StreamWriter\Config\StandardStream;
 use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
+use mteu\StreamWriter\Exception\InvalidLogWriterOptionException;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;
@@ -57,7 +58,7 @@ final class StreamWriter extends AbstractWriter
 
     /**
      * @param array{outputStream: StandardStream} $options
-     * @throws InvalidLogWriterConfigurationException
+     * @throws InvalidLogWriterConfigurationException|\TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException
      */
     public function __construct(array $options = ['outputStream' => StandardStream::Error])
     {
@@ -70,7 +71,7 @@ final class StreamWriter extends AbstractWriter
 
     /**
      * @return LogLevel|StandardStream|class-string[]
-     * @throws InvalidLogWriterConfigurationException
+     * @throws InvalidLogWriterOptionException
      */
     public function getOption(string $option): array|LogLevel|StandardStream
     {
@@ -78,7 +79,7 @@ final class StreamWriter extends AbstractWriter
             'outputStream' => $this->outputStream,
             'maxLevel' => $this->maxLevel,
             'ignoredComponents' => $this->ignoredComponents,
-            default => throw new InvalidLogWriterConfigurationException(
+            default => throw new InvalidLogWriterOptionException(
                 'Option ' . $option . ' does not exist.',
                 1726173519
             ),
