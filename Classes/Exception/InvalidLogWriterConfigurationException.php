@@ -26,7 +26,7 @@ namespace mteu\StreamWriter\Exception;
 /**
  * InvalidLogWriterConfigurationException.
  *
- * @author Martin Adler <martin.adler@init.de>
+ * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
 final class InvalidLogWriterConfigurationException extends Exception {}
