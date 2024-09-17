@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the TYPO3 CMS extension "mteu/typo3-stream-writer".
  *
@@ -19,20 +21,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** @noinspection PhpUndefinedVariableInspection */
-$EM_CONF[$_EXTKEY] = [
-    'title' => 'TYPO3 Stream Writer',
-    'description' => 'This extension adds the possibility to log to stdout and stderr.',
-    'category' => 'misc',
-    'version' => '0.3.1',
-    'state' => 'alpha',
-    'clearCacheOnLoad' => true,
-    'author' => 'Martin Adler',
-    'author_email' => 'mteu@mailbox.org',
-    'constraints' => [
-        'depends' => [
-            'typo3' => '12.4.0-13.3.99',
-            'php' => '8.1.0-8.3.99',
-        ],
-    ],
-];
+namespace mteu\StreamWriter\Exception;
+
+/**
+ * InvalidLogWriterOptionException.
+ *
+ * @author Martin Adler <mteu@mailbox.org>
+ * @license GPL-3.0-or-later
+ */
+final class InvalidLogWriterOptionException extends Exception {}

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the TYPO3 CMS extensions "mteu/typo3-stream-writer".
+ * This file is part of the TYPO3 CMS extension "mteu/typo3-stream-writer".
  *
  * Copyright (C) 2024 Martin Adler <mteu@mailbox.org>
  *
@@ -21,16 +21,12 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\Log\Config;
+namespace mteu\StreamWriter\Exception;
 
 /**
- * StandardStream.
+ * Exception.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-enum StandardStream: string
-{
-    case Out = 'php://stdout';
-    case Error = 'php://stderr';
-}
+abstract class Exception extends \Exception {}
