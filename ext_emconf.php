@@ -31,7 +31,7 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'mteu@mailbox.org',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-13.2.99',
+            'typo3' => '12.4.0-13.3.99',
             'php' => '8.1.0-8.3.99',
         ],
     ],
