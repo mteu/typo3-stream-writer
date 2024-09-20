@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 /*
@@ -20,44 +19,18 @@ declare(strict_types=1);
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+namespace mteu\StreamWriter\ValueObjects;
 
-namespace mteu\StreamWriter\Config;
+use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * LogLevel.
+ * LogOutput.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
- *
- * @codeCoverageIgnore
  */
-enum LogLevel: string
+interface Message
 {
-    case Alert     = 'alert';
-    case Critical  = 'critical';
-    case Debug     = 'debug';
-    case Emergency = 'emergency';
-    case Error     = 'error';
-    case Info      = 'info';
-    case Notice    = 'notice';
-    case Warning   = 'warning';
-
-    public function priority(): int
-    {
-        return match ($this) {
-            self::Emergency => 8,
-            self::Alert => 7,
-            self::Critical => 6,
-            self::Error => 5,
-            self::Warning => 4,
-            self::Notice => 3,
-            self::Info => 2,
-            self::Debug => 1,
-        };
-    }
-
-    public static function highest(): self
-    {
-        return self::Emergency;
-    }
+    public function print(): string;
+    // public static function create(LogRecord $record): Message;
 }
