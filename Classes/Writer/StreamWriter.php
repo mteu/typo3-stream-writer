@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Writer;
 
+use mteu\StreamWriter\ValueObjects\ExceptionHandlerMessage;
+use mteu\StreamWriter\ValueObjects\LogMessage;
+use mteu\StreamWriter\ValueObjects\Message;
 use mteu\StreamWriter\Config\LogLevel;
 use mteu\StreamWriter\Config\StandardStream;
 use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
@@ -43,14 +46,6 @@ final class StreamWriter extends AbstractWriter
      * @var class-string[]
      */
     private readonly array $ignoredComponents;
-
-    /**
-     * @var class-string[] $exceptionHandlers
-     */
-    private array $exceptionHandlers = [
-        \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class,
-        \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class,
-    ];
 
     private readonly LogLevel $maxLevel;
 
@@ -178,61 +173,11 @@ final class StreamWriter extends AbstractWriter
             throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331957);
         }
 
-        $output = fwrite(
-            $resource,
-            sprintf(
-                '[%s] %s: %s' . PHP_EOL,
-                strtoupper($record->getLevel()),
-                $record->getComponent(),
-                $this->isExceptionHandler($record->getComponent()) ?
-                    $this->generateMessageForExceptionHandler($record) :
-                    $record->getMessage(),
-            ),
-        );
+        $output = fwrite($resource, (new LogMessage($record))->print());
 
         if ($output === false || $output === 0) {
             throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331958);
         }
-    }
-
-    private function generateMessageForExceptionHandler(LogRecord $record): string
-    {
-        /**
-         * @var array{
-         *     mode: string,
-         *     application_mode: string,
-         *     exception_class: string,
-         *     exception_code: int,
-         *     file: string,
-         *     line: int,
-         *     message: string,
-         * } $data
-         */
-        $data = $record->getData();
-
-        return sprintf(
-            '(%s: %s) %s, code %d, file %s, line %d: %s',
-            $data['mode'],
-            $data['application_mode'],
-            $data['exception_class'],
-            $data['exception_code'],
-            $data['file'],
-            $data['line'],
-            $data['message'],
-        );
-    }
-
-    private function isExceptionHandler(string $component): bool
-    {
-        $classString = str_replace('.', '\\', $component);
-
-        foreach ($this->exceptionHandlers as $handler) {
-            if (is_a($classString, $handler, true)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -240,7 +185,7 @@ final class StreamWriter extends AbstractWriter
      */
     private function determineMaximalLevel(array $options): LogLevel
     {
-        $default = LogLevel::Critical;
+        $default = LogLevel::highest();
 
         if (!array_key_exists('maxLevel', $options)) {
             return $default;

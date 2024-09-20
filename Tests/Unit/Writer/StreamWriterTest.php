@@ -159,13 +159,12 @@ final class StreamWriterTest extends Framework\TestCase
         self::assertEquals(Src\Config\LogLevel::Error, $writer->getOption('maxLevel'));
 
         // @todo: move to separate test
-        // wrong maxLevel or type defaults Src\Config\LogLevel::CRITICAL
         $writer = $this->createWriter([
             'outputStream' => Src\Config\StandardStream::Error,
             'maxLevel' => 'Error',
         ]);
         self::assertEquals(Src\Config\StandardStream::Error, $writer->getOption('outputStream'));
-        self::assertEquals(Src\Config\LogLevel::Critical, $writer->getOption('maxLevel'));
+        self::assertEquals(Src\Config\LogLevel::highest(), $writer->getOption('maxLevel'));
     }
 
     /**

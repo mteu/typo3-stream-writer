@@ -24,40 +24,15 @@ declare(strict_types=1);
 namespace mteu\StreamWriter\Config;
 
 /**
- * LogLevel.
+ * ExceptionHandlers.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  *
  * @codeCoverageIgnore
  */
-enum LogLevel: string
+enum ExceptionHandlers: string
 {
-    case Alert     = 'alert';
-    case Critical  = 'critical';
-    case Debug     = 'debug';
-    case Emergency = 'emergency';
-    case Error     = 'error';
-    case Info      = 'info';
-    case Notice    = 'notice';
-    case Warning   = 'warning';
-
-    public function priority(): int
-    {
-        return match ($this) {
-            self::Emergency => 8,
-            self::Alert => 7,
-            self::Critical => 6,
-            self::Error => 5,
-            self::Warning => 4,
-            self::Notice => 3,
-            self::Info => 2,
-            self::Debug => 1,
-        };
-    }
-
-    public static function highest(): self
-    {
-        return self::Emergency;
-    }
+     case CoreError = \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class;
+     case FrontendContentObject = \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class;
 }

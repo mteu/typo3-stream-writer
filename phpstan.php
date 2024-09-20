@@ -52,7 +52,9 @@ $configuration['parameters']['ergebnis'] = [
     ],
 ];
 
-$ignoreErrors = [];
+$ignoreErrors = [
+    '#^Interface must be located in "Contract" or "Contracts" namespace$#',
+];
 
 if (count($configuration['parameters']['ignoreErrors']) > 0) {
     foreach ($configuration['parameters']['ignoreErrors'] as $baselineIgnore) {
