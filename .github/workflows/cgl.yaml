@@ -19,7 +19,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.3
           tools: composer:v2, composer-unused
           coverage: none
 
@@ -39,7 +39,7 @@ jobs:
 
       # SCA
       - name: SCA PHP
-        run: composer sca:php -- --error-format github
+        run: composer sca:php -- --error-format github --debug
 
       # Migration
       - name: Migration
