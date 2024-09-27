@@ -58,6 +58,14 @@ enum LogLevel: string
 
     public static function highest(): self
     {
-        return self::Emergency;
+        $highestLogLevel = null;
+
+        foreach (self::cases() as $logLevel) {
+            if ($highestLogLevel === null || $logLevel->priority() > $highestLogLevel->priority()) {
+                $highestLogLevel = $logLevel;
+            }
+        }
+
+        return $highestLogLevel;
     }
 }
