@@ -4666,16 +4666,16 @@
         },
         {
             "name": "typo3fluid/fluid",
-            "version": "4.0.0",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/Fluid.git",
-                "reference": "a5d7bd3134035639106cb783681f04cc0f91294d"
+                "reference": "d2504c4ea151984c891c3007a0ea73d38689c51a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/Fluid/zipball/a5d7bd3134035639106cb783681f04cc0f91294d",
-                "reference": "a5d7bd3134035639106cb783681f04cc0f91294d",
+                "url": "https://api.github.com/repos/TYPO3/Fluid/zipball/d2504c4ea151984c891c3007a0ea73d38689c51a",
+                "reference": "d2504c4ea151984c891c3007a0ea73d38689c51a",
                 "shasum": ""
             },
             "require": {
@@ -4716,7 +4716,7 @@
                 "issues": "https://github.com/TYPO3/Fluid/issues",
                 "source": "https://github.com/TYPO3/Fluid"
             },
-            "time": "2024-09-10T16:15:31+00:00"
+            "time": "2024-10-03T09:50:37+00:00"
         }
     ],
     "packages-dev": [
@@ -4898,6 +4898,79 @@
                 }
             ],
             "time": "2022-12-23T10:58:28+00:00"
+        },
+        {
+            "name": "composer/class-map-generator",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/class-map-generator.git",
+                "reference": "98bbf6780e56e0fd2404fe4b82eb665a0f93b783"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/class-map-generator/zipball/98bbf6780e56e0fd2404fe4b82eb665a0f93b783",
+                "reference": "98bbf6780e56e0fd2404fe4b82eb665a0f93b783",
+                "shasum": ""
+            },
+            "require": {
+                "composer/pcre": "^2.1 || ^3.1",
+                "php": "^7.2 || ^8.0",
+                "symfony/finder": "^4.4 || ^5.3 || ^6 || ^7"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.6",
+                "phpstan/phpstan-deprecation-rules": "^1",
+                "phpstan/phpstan-phpunit": "^1",
+                "phpstan/phpstan-strict-rules": "^1.1",
+                "phpunit/phpunit": "^8",
+                "symfony/filesystem": "^5.4 || ^6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\ClassMapGenerator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "https://seld.be"
+                }
+            ],
+            "description": "Utilities to scan PHP code and generate class maps.",
+            "keywords": [
+                "classmap"
+            ],
+            "support": {
+                "issues": "https://github.com/composer/class-map-generator/issues",
+                "source": "https://github.com/composer/class-map-generator/tree/1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-10-03T18:14:00+00:00"
         },
         {
             "name": "composer/pcre",
@@ -10439,19 +10512,20 @@
         },
         {
             "name": "typo3/testing-framework",
-            "version": "8.2.1",
+            "version": "8.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/testing-framework.git",
-                "reference": "d317133015a7028854f05ad68b97666c7b6d634d"
+                "reference": "480edc81d4b823c4f93a0b2dfc73457ae393f8ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/d317133015a7028854f05ad68b97666c7b6d634d",
-                "reference": "d317133015a7028854f05ad68b97666c7b6d634d",
+                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/480edc81d4b823c4f93a0b2dfc73457ae393f8ec",
+                "reference": "480edc81d4b823c4f93a0b2dfc73457ae393f8ec",
                 "shasum": ""
             },
             "require": {
+                "composer/class-map-generator": "^1.3.4",
                 "guzzlehttp/psr7": "^2.5.0",
                 "php": "^8.1",
                 "phpunit/phpunit": "^10.1 || ^11.0",
@@ -10505,9 +10579,9 @@
             "support": {
                 "general": "https://typo3.org/support/",
                 "issues": "https://github.com/TYPO3/testing-framework/issues",
-                "source": "https://github.com/TYPO3/testing-framework/tree/8.2.1"
+                "source": "https://github.com/TYPO3/testing-framework/tree/8.2.3"
             },
-            "time": "2024-08-14T18:02:34+00:00"
+            "time": "2024-10-10T14:25:19+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -10570,12 +10644,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
