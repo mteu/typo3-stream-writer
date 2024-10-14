@@ -32,16 +32,16 @@ use TYPO3\CMS\Core\Log\LogRecord;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final readonly class ExceptionHandlerMessage implements Message
+final class ExceptionHandlerMessage implements Message
 {
         public function __construct(
-            private string $mode,
-            private string $applicationMode,
-            private string $exceptionClass,
-            private int $exceptionCode,
-            private string $file,
-            private int $line,
-            private string $message,
+            private readonly string $mode,
+            private readonly string $applicationMode,
+            private readonly string $exceptionClass,
+            private readonly int $exceptionCode,
+            private readonly string $file,
+            private readonly int $line,
+            private readonly string $message,
         )
         {
         }

@@ -32,9 +32,9 @@ use TYPO3\CMS\Core\Log\LogRecord;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final readonly class LogMessage implements Message
+final class LogMessage implements Message
 {
-        public function __construct(private LogRecord $record) {}
+        public function __construct(private readonly LogRecord $record) {}
 
         public function print(): string
         {
