@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8c2aa4e37c0f739f77f977878321b43",
+    "content-hash": "10f17347a5c92ea8dbbb8dffd385428b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -7079,16 +7079,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.6",
+            "version": "1.12.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "dc4d2f145a88ea7141ae698effd64d9df46527ae"
+                "reference": "40e461db3baa83c2a2ed95499b9af8b6f875bc53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/dc4d2f145a88ea7141ae698effd64d9df46527ae",
-                "reference": "dc4d2f145a88ea7141ae698effd64d9df46527ae",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/40e461db3baa83c2a2ed95499b9af8b6f875bc53",
+                "reference": "40e461db3baa83c2a2ed95499b9af8b6f875bc53",
                 "shasum": ""
             },
             "require": {
@@ -7133,7 +7133,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-06T15:03:59+00:00"
+            "time": "2024-10-14T08:46:51+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -10644,14 +10644,23 @@
             "time": "2022-06-03T18:03:27+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "phpstan/phpstan",
+            "version": "1.12.9999999.9999999-dev",
+            "alias": "2.0",
+            "alias_normalized": "2.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "phpstan/phpstan": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

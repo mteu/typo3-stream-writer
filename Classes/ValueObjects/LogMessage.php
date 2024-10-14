@@ -34,7 +34,7 @@ use TYPO3\CMS\Core\Log\LogRecord;
  */
 final class LogMessage implements Message
 {
-        public function __construct(private readonly LogRecord $record) {}
+        public function __construct(protected readonly LogRecord $record) {}
 
         public function print(): string
         {

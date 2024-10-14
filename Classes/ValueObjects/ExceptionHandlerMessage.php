@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\ValueObjects;
 
-
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
@@ -42,9 +41,7 @@ final class ExceptionHandlerMessage implements Message
             private readonly string $file,
             private readonly int $line,
             private readonly string $message,
-        )
-        {
-        }
+        ) {}
 
         public function print(): string
         {
@@ -86,6 +83,19 @@ final class ExceptionHandlerMessage implements Message
 
         public static function create(LogRecord $record): self
         {
-            return self::fromArray($record->getData());
+            /**
+             * @var array{
+             *     mode: string,
+             *     application_mode: string,
+             *     exception_class: string,
+             *     exception_code: int,
+             *     file: string,
+             *     line: int,
+             *     message: string,
+             * } $recordData
+             */
+            $recordData = $record->getData();
+
+            return self::fromArray($recordData);
         }
 }
