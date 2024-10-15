@@ -34,6 +34,8 @@ use TYPO3\CMS\Core\Log\LogRecord;
 final class ExceptionHandlerMessage implements Message
 {
     public function __construct(
+        private readonly string $level,
+        private readonly string $component,
         private readonly string $mode,
         private readonly string $applicationMode,
         private readonly string $exceptionClass,
@@ -44,6 +46,15 @@ final class ExceptionHandlerMessage implements Message
     ) {}
 
     public function print(): string
+    {
+        return sprintf(
+            '[%s] %s: %s' . PHP_EOL,
+            strtoupper($this->level),
+            $this->component,
+            $this->printData(),
+        );
+    }
+    public function printData(): string
     {
         return sprintf(
             '(%s: %s) %s, code %d, file %s, line %d: %s',
@@ -57,45 +68,20 @@ final class ExceptionHandlerMessage implements Message
         );
     }
 
-    /**
-     * @param array{
-     *     mode: string,
-     *     application_mode: string,
-     *     exception_class: string,
-     *     exception_code: int,
-     *     file: string,
-     *     line: int,
-     *     message: string,
-     * } $data
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['mode'],
-            $data['application_mode'],
-            $data['exception_class'],
-            (int)$data['exception_code'],
-            $data['file'],
-            (int)$data['line'],
-            $data['message'],
-        );
-    }
-
     public static function create(LogRecord $record): self
     {
-        /**
-         * @var array{
-         *     mode: string,
-         *     application_mode: string,
-         *     exception_class: string,
-         *     exception_code: int,
-         *     file: string,
-         *     line: int,
-         *     message: string,
-         * } $recordData
-         */
         $recordData = $record->getData();
 
-        return self::fromArray($recordData);
+        return new self(
+            $record->getLevel(),
+            $record->getComponent(),
+            $recordData['mode'] ?? '',
+            $recordData['application_mode'] ?? '',
+            $recordData['exception_class'] ?? '',
+            (int)$recordData['exception_code'],
+            $recordData['file'] ?? '',
+            (int)$recordData['line'],
+            $recordData['message'] ?? '',
+        );
     }
 }

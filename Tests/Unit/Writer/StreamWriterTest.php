@@ -29,6 +29,7 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Error\ProductionExceptionHandler;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
@@ -241,32 +242,19 @@ final class StreamWriterTest extends Framework\TestCase
             'mode' => 'BE',
             'application_mode' => 'WEB',
             'exception_class' => 'ExceptionClass',
-            'exception_code' => 'ExceptionCode',
-            'file' => '',
+            'exception_code' => 123,
+            'file' => '/foo/bar.php',
             'line' => 1,
             'message' => 'Message',
         ];
 
         $record = new LogRecord(
-            'TYPO3.CMS.Core.Error.ExceptionHandlerInterface',
+            ProductionExceptionHandler::class,
             Src\Config\LogLevel::Error->value,
             'Foo',
             $data,
             'Bar',
         );
-
-        /**
-         * @var array{
-         *     mode: string,
-         *     application_mode: string,
-         *     exception_class: string,
-         *     exception_code: int,
-         *     file: string,
-         *     line: int,
-         *     message: string,
-         * } $data
-         */
-        $data = $record->getData();
 
         $expected = sprintf(
             '[%s] %s: (%s: %s) %s, code %d, file %s, line %d: %s',
@@ -302,7 +290,16 @@ final class StreamWriterTest extends Framework\TestCase
     ): string {
         $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
 
-        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger, $ignoredComponent));
+        file_put_contents(
+            $tempOutputFile,
+            $this->generatePhpScriptForLogWriting(
+                $stream,
+                $record,
+                $maxLevel,
+                $trigger,
+                $ignoredComponent,
+            ),
+        );
 
         $process = new Process([PHP_BINARY, $tempOutputFile]);
         $process->run();

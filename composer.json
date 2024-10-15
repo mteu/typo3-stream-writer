@@ -1,6 +1,6 @@
 {
 	"name": "mteu/typo3-stream-writer",
-	"description": "This extension adds the possibility to log to php://stdout` and php://stderr",
+	"description": "This extension adds the possibility to log to php://stdout and php://stderr",
 	"license": "GPL-3.0-or-later",
 	"type": "typo3-cms-extension",
 	"authors": [
@@ -38,12 +38,11 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"mteu\\StreamWriter\\Tests\\Unit\\": "Tests/Unit/"
+			"mteu\\StreamWriter\\Tests\\": "Tests/"
 		}
 	},
 	"config": {
 		"allow-plugins": {
-			"codeception/c3": true,
 			"ergebnis/composer-normalize": true,
 			"phpstan/extension-installer": true,
 			"typo3/class-alias-loader": true,
