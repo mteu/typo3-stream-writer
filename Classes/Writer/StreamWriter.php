@@ -30,6 +30,8 @@ use mteu\StreamWriter\Config\LogLevel;
 use mteu\StreamWriter\Config\StandardStream;
 use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
 use mteu\StreamWriter\Exception\InvalidLogWriterOptionException;
+use mteu\StreamWriter\ValueObjects\Message;
+use mteu\StreamWriter\ValueObjects\MessageFactory;
 use TYPO3\CMS\Core\Log\LogRecord;
 use TYPO3\CMS\Core\Log\Writer\AbstractWriter;
 use TYPO3\CMS\Core\Log\Writer\WriterInterface;
@@ -160,12 +162,14 @@ final class StreamWriter extends AbstractWriter
             return $this;
         }
 
-        $this->writeToResource($record);
+        $this->writeToResource(
+            MessageFactory::createFromRecord($record),
+        );
 
         return $this;
     }
 
-    private function writeToResource(LogRecord $record): void
+    private function writeToResource(Message $message): void
     {
         $resource = fopen($this->outputStream->value, 'w');
 
@@ -173,7 +177,7 @@ final class StreamWriter extends AbstractWriter
             throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331957);
         }
 
-        $output = fwrite($resource, (new LogMessage($record))->print());
+        $output = fwrite($resource, $message->print());
 
         if ($output === false || $output === 0) {
             throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331958);

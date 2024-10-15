@@ -31,6 +31,6 @@ use TYPO3\CMS\Core\Log\LogRecord;
  */
 interface Message
 {
+    public static function create(LogRecord $record): Message;
     public function print(): string;
-    // public static function create(LogRecord $record): Message;
 }

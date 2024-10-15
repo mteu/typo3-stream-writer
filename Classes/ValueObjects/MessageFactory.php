@@ -23,38 +23,27 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\ValueObjects;
 
+use mteu\StreamWriter\Config\ExceptionHandlers;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * LogMessage.
+ * MessageFactory.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class LogMessage implements Message
+final class MessageFactory
 {
-    public function __construct(
-        private readonly string $level,
-        private readonly string $component,
-        private readonly string $message,
-    ) {}
-
-    public static function create(LogRecord $record): self
+    public static function createFromRecord(LogRecord $record): Message
     {
-        return new self(
-                $record->getLevel(),
-                $record->getComponent(),
-                $record->getMessage(),
-            );
-    }
+        $classString = str_replace('.', '\\', $record->getComponent());
 
-    public function print(): string
-    {
-        return sprintf(
-            '[%s] %s: %s' . PHP_EOL,
-            strtoupper($this->level),
-            $this->component,
-            $this->message,
-        );
+        foreach (ExceptionHandlers::cases() as $handler) {
+            if (is_a($classString, $handler->value, true)) {
+                return ExceptionHandlerMessage::create($record);
+            }
+        }
+
+        return LogMessage::create($record);
     }
 }
