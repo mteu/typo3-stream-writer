@@ -30,48 +30,44 @@ use TYPO3\CMS\Core\Error\ProductionExceptionHandler;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * MessageFactoryTest.
+ * ExceptionHandlerMessageTest.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-#[Framework\Attributes\CoversClass(Src\ValueObjects\MessageFactory::class)]
-final class MessageFactoryTest extends Framework\TestCase
+#[Framework\Attributes\CoversClass(Src\ValueObjects\ExceptionHandlerLogRecordMessage::class)]
+final class ExceptionHandlerLogRecordMessageTest extends Framework\TestCase
 {
-    private Src\ValueObjects\MessageFactory $subject;
+    private LogRecord $logRecord;
 
     protected function setUp(): void
     {
-        $this->subject = new Src\ValueObjects\MessageFactory();
-    }
+        parent::setUp();
 
-    #[Framework\Attributes\Test]
-    public function messageFactoryCreatesLogMessage(): void
-    {
-        $logRecord = new LogRecord(
-            'Foo/Bar/',
-            LogLevel::WARNING,
-            'FooBarWarningMessage',
-        );
-
-        self::assertInstanceOf(
-            LogRecordMessage::class,
-            $this->subject::createFromRecord($logRecord),
-        );
-    }
-
-    #[Framework\Attributes\Test]
-    public function messageFactoryCreatesExceptionHandlerMessage(): void
-    {
-        $logRecord = new LogRecord(
+        $this->logRecord = new LogRecord(
             ProductionExceptionHandler::class,
             LogLevel::WARNING,
-            'FooBarWarningMessage',
+            'Foo',
+            [
+                'mode' => 'BE',
+                'application_mode' => 'WEB',
+                'exception_class' => 'Foo/ExceptionClass',
+                'exception_code' => 123,
+                'file' => '/foo/bar.php',
+                'line' => 1,
+                'message' => 'Message',
+            ],
         );
+    }
 
-        self::assertInstanceOf(
-            ExceptionHandlerLogRecordMessage::class,
-            $this->subject::createFromRecord($logRecord),
+    #[Framework\Attributes\Test]
+    public function printLogRecordMessageMatchesDesiredFormat(): void
+    {
+        $logRecordMessage = ExceptionHandlerLogRecordMessage::create($this->logRecord);
+
+        self::assertEquals(
+            '[WARNING] TYPO3\CMS\Core\Error\ProductionExceptionHandler: (BE: WEB) Foo/ExceptionClass, code 123, file /foo/bar.php, line 1: Message' . PHP_EOL,
+            $logRecordMessage->print(),
         );
     }
 }

@@ -23,27 +23,47 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\ValueObjects;
 
-use mteu\StreamWriter\Config\ExceptionHandlers;
+use mteu\StreamWriter as Src;
+use PHPUnit\Framework;
+use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * MessageFactory.
+ * LogRecordMessageTest.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class MessageFactory
+#[Framework\Attributes\CoversClass(Src\ValueObjects\LogRecordMessage::class)]
+final class LogRecordMessageTest extends Framework\TestCase
 {
-    public static function createFromRecord(LogRecord $record): Message
+    private LogRecord $logRecord;
+
+    protected function setUp(): void
     {
-        $classString = str_replace('.', '\\', $record->getComponent());
+        parent::setUp();
 
-        foreach (ExceptionHandlers::cases() as $handler) {
-            if (is_a($classString, $handler->value, true)) {
-                return ExceptionHandlerLogRecordMessage::create($record);
-            }
-        }
+        $this->logRecord = new LogRecord(
+            'Foo/Bar',
+            LogLevel::WARNING,
+            'Foo',
+        );
+    }
 
-        return LogRecordMessage::create($record);
+    #[Framework\Attributes\Test]
+    public function createLogRecordMessageSucceeds(): void
+    {
+        self::assertInstanceOf(LogRecordMessage::class, LogRecordMessage::create($this->logRecord));
+    }
+
+    #[Framework\Attributes\Test]
+    public function printLogRecordMessageMatchesDesiredFormat(): void
+    {
+        $logRecordMessage = LogRecordMessage::create($this->logRecord);
+
+        self::assertEquals(
+            '[WARNING] Foo/Bar: Foo' . PHP_EOL,
+            $logRecordMessage->print(),
+        );
     }
 }

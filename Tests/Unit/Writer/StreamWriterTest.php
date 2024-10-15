@@ -241,7 +241,7 @@ final class StreamWriterTest extends Framework\TestCase
         $data = [
             'mode' => 'BE',
             'application_mode' => 'WEB',
-            'exception_class' => 'ExceptionClass',
+            'exception_class' => 'Foo/ExceptionClass',
             'exception_code' => 123,
             'file' => '/foo/bar.php',
             'line' => 1,
