@@ -7,7 +7,7 @@
 
 [![TYPO3 12](https://img.shields.io/badge/TYPO3-12-orange.svg)](https://get.typo3.org/version/12)
 [![TYPO3 13](https://img.shields.io/badge/TYPO3-13-orange.svg)](https://get.typo3.org/version/13)
-[![PHP Version Require](http://poser.pugx.org/mteu/typo3-stream-writer/require/php)](https://packagist.org/packages/mteu/typo3-stream-writer)
+[![PHP Version Require](https://poser.pugx.org/mteu/typo3-stream-writer/require/php)](https://packagist.org/packages/mteu/typo3-stream-writer)
 # TYPO3 Stream Writer 🍿
 </div>
 
