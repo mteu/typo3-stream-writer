@@ -33,6 +33,6 @@ namespace mteu\StreamWriter\Config;
  */
 enum ExceptionHandlers: string
 {
-     case CoreError = \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class;
-     case FrontendContentObject = \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class;
+    case CoreError = \TYPO3\CMS\Core\Error\ExceptionHandlerInterface::class;
+    case FrontendContentObject = \TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface::class;
 }

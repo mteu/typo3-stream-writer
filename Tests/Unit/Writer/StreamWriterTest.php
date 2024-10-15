@@ -235,7 +235,7 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     #[Framework\Attributes\Test]
-    public function writeLogCreationExtractsStackDateFromExceptionHandler(): void
+    public function writeLogCreationExtractsStackDataFromExceptionHandler(): void
     {
         $data = [
             'mode' => 'BE',
@@ -446,8 +446,8 @@ final class StreamWriterTest extends Framework\TestCase
     public static function provideClassNames(): \Generator
     {
         yield 'constant' => [BackendUserAuthentication::class];
-        yield 'fqcn' => ['TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication'];
-        yield 'simplySlashedClassName' => ['TYPO3\CMS\Core\Authentication\BackendUserAuthentication'];
+        yield 'fqcn' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
+        yield 'simplySlashedClassName' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
         yield 'fullyDottedClassName' => ['TYPO3.CMS.Core.Authentication.BackendUserAuthentication'];
     }
 }

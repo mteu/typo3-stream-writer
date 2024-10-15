@@ -42,10 +42,10 @@ final class LogMessage implements Message
     public static function create(LogRecord $record): self
     {
         return new self(
-                $record->getLevel(),
-                $record->getComponent(),
-                $record->getMessage(),
-            );
+            $record->getLevel(),
+            $record->getComponent(),
+            $record->getMessage(),
+        );
     }
 
     public function print(): string

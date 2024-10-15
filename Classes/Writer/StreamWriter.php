@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace mteu\StreamWriter\Writer;
 
-use mteu\StreamWriter\ValueObjects\ExceptionHandlerMessage;
-use mteu\StreamWriter\ValueObjects\LogMessage;
-use mteu\StreamWriter\ValueObjects\Message;
 use mteu\StreamWriter\Config\LogLevel;
 use mteu\StreamWriter\Config\StandardStream;
 use mteu\StreamWriter\Exception\InvalidLogWriterConfigurationException;
@@ -106,7 +103,7 @@ final class StreamWriter extends AbstractWriter
 
                 if (!is_string($component)) {
                     throw new InvalidLogWriterConfigurationException(
-                        'Invalid \'ignoredComponents option type\' for log writer of type "' . __CLASS__ . '"',
+                        'Invalid \'ignoredComponents option type\' for log writer of type "' . self::class . '"',
                         1726170401,
                     );
                 }
@@ -127,7 +124,7 @@ final class StreamWriter extends AbstractWriter
     private function throwConfigurationException(string $type, string $option, int $code): never
     {
         throw new InvalidLogWriterConfigurationException(
-            $type . ' LogWriter configuration option "' . $option . '" for log writer of type "' . __CLASS__ . '"',
+            $type . ' LogWriter configuration option "' . $option . '" for log writer of type "' . self::class . '"',
             $code,
         );
     }

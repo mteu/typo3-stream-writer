@@ -33,32 +33,58 @@ use TYPO3\CMS\Core\Log\LogRecord;
  */
 final class ExceptionHandlerMessage implements Message
 {
-        public function __construct(
-            private readonly string $mode,
-            private readonly string $applicationMode,
-            private readonly string $exceptionClass,
-            private readonly int $exceptionCode,
-            private readonly string $file,
-            private readonly int $line,
-            private readonly string $message,
-        ) {}
+    public function __construct(
+        private readonly string $mode,
+        private readonly string $applicationMode,
+        private readonly string $exceptionClass,
+        private readonly int $exceptionCode,
+        private readonly string $file,
+        private readonly int $line,
+        private readonly string $message,
+    ) {}
 
-        public function print(): string
-        {
-            return sprintf(
-                '(%s: %s) %s, code %d, file %s, line %d: %s',
-                $this->mode,
-                $this->applicationMode,
-                $this->exceptionClass,
-                $this->exceptionCode,
-                $this->file,
-                $this->line,
-                $this->message,
-            );
-        }
+    public function print(): string
+    {
+        return sprintf(
+            '(%s: %s) %s, code %d, file %s, line %d: %s',
+            $this->mode,
+            $this->applicationMode,
+            $this->exceptionClass,
+            $this->exceptionCode,
+            $this->file,
+            $this->line,
+            $this->message,
+        );
+    }
 
+    /**
+     * @param array{
+     *     mode: string,
+     *     application_mode: string,
+     *     exception_class: string,
+     *     exception_code: int,
+     *     file: string,
+     *     line: int,
+     *     message: string,
+     * } $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['mode'],
+            $data['application_mode'],
+            $data['exception_class'],
+            (int)$data['exception_code'],
+            $data['file'],
+            (int)$data['line'],
+            $data['message'],
+        );
+    }
+
+    public static function create(LogRecord $record): self
+    {
         /**
-         * @param array{
+         * @var array{
          *     mode: string,
          *     application_mode: string,
          *     exception_class: string,
@@ -66,36 +92,10 @@ final class ExceptionHandlerMessage implements Message
          *     file: string,
          *     line: int,
          *     message: string,
-         * } $data
+         * } $recordData
          */
-        public static function fromArray(array $data): self
-        {
-            return new self(
-              $data['mode'],
-              $data['application_mode'],
-              $data['exception_class'],
-              (int)$data['exception_code'],
-              $data['file'],
-              (int)$data['line'],
-              $data['message'],
-            );
-        }
+        $recordData = $record->getData();
 
-        public static function create(LogRecord $record): self
-        {
-            /**
-             * @var array{
-             *     mode: string,
-             *     application_mode: string,
-             *     exception_class: string,
-             *     exception_code: int,
-             *     file: string,
-             *     line: int,
-             *     message: string,
-             * } $recordData
-             */
-            $recordData = $record->getData();
-
-            return self::fromArray($recordData);
-        }
+        return self::fromArray($recordData);
+    }
 }
