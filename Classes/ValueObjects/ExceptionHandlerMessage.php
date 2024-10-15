@@ -39,9 +39,9 @@ final class ExceptionHandlerMessage implements Message
         private readonly string $mode,
         private readonly string $applicationMode,
         private readonly string $exceptionClass,
-        private readonly int $exceptionCode,
+        private readonly int|string $exceptionCode,
         private readonly string $file,
-        private readonly int $line,
+        private readonly int|string $line,
         private readonly string $message,
     ) {}
 
@@ -78,9 +78,9 @@ final class ExceptionHandlerMessage implements Message
             $recordData['mode'] ?? '',
             $recordData['application_mode'] ?? '',
             $recordData['exception_class'] ?? '',
-            (int)$recordData['exception_code'],
+            $recordData['exception_code'] ?? 0,
             $recordData['file'] ?? '',
-            (int)$recordData['line'],
+            $recordData['line'] ?? 0,
             $recordData['message'] ?? '',
         );
     }
