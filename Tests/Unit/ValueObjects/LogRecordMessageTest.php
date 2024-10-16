@@ -51,12 +51,6 @@ final class LogRecordMessageTest extends Framework\TestCase
     }
 
     #[Framework\Attributes\Test]
-    public function createLogRecordMessageSucceeds(): void
-    {
-        self::assertInstanceOf(LogRecordMessage::class, LogRecordMessage::create($this->logRecord));
-    }
-
-    #[Framework\Attributes\Test]
     public function printLogRecordMessageMatchesDesiredFormat(): void
     {
         $logRecordMessage = LogRecordMessage::create($this->logRecord);

@@ -20,6 +20,7 @@ declare(strict_types=1);
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 namespace mteu\StreamWriter\ValueObjects;
 
 use TYPO3\CMS\Core\Log\LogRecord;
