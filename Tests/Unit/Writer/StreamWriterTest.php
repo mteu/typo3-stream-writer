@@ -29,6 +29,7 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Error\ProductionExceptionHandler;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
@@ -159,13 +160,12 @@ final class StreamWriterTest extends Framework\TestCase
         self::assertEquals(Src\Config\LogLevel::Error, $writer->getOption('maxLevel'));
 
         // @todo: move to separate test
-        // wrong maxLevel or type defaults Src\Config\LogLevel::CRITICAL
         $writer = $this->createWriter([
             'outputStream' => Src\Config\StandardStream::Error,
             'maxLevel' => 'Error',
         ]);
         self::assertEquals(Src\Config\StandardStream::Error, $writer->getOption('outputStream'));
-        self::assertEquals(Src\Config\LogLevel::Critical, $writer->getOption('maxLevel'));
+        self::assertEquals(Src\Config\LogLevel::highest(), $writer->getOption('maxLevel'));
     }
 
     /**
@@ -236,38 +236,25 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     #[Framework\Attributes\Test]
-    public function writeLogCreationExtractsStackDateFromExceptionHandler(): void
+    public function writeLogCreationExtractsStackDataFromExceptionHandler(): void
     {
         $data = [
             'mode' => 'BE',
             'application_mode' => 'WEB',
-            'exception_class' => 'ExceptionClass',
-            'exception_code' => 'ExceptionCode',
-            'file' => '',
+            'exception_class' => 'Foo/ExceptionClass',
+            'exception_code' => 123,
+            'file' => '/foo/bar.php',
             'line' => 1,
             'message' => 'Message',
         ];
 
         $record = new LogRecord(
-            'TYPO3.CMS.Core.Error.ExceptionHandlerInterface',
+            ProductionExceptionHandler::class,
             Src\Config\LogLevel::Error->value,
             'Foo',
             $data,
             'Bar',
         );
-
-        /**
-         * @var array{
-         *     mode: string,
-         *     application_mode: string,
-         *     exception_class: string,
-         *     exception_code: int,
-         *     file: string,
-         *     line: int,
-         *     message: string,
-         * } $data
-         */
-        $data = $record->getData();
 
         $expected = sprintf(
             '[%s] %s: (%s: %s) %s, code %d, file %s, line %d: %s',
@@ -303,7 +290,16 @@ final class StreamWriterTest extends Framework\TestCase
     ): string {
         $tempOutputFile = tempnam(sys_get_temp_dir(), 'stream_writer_test_script_');
 
-        file_put_contents($tempOutputFile, $this->generatePhpScriptForLogWriting($stream, $record, $maxLevel, $trigger, $ignoredComponent));
+        file_put_contents(
+            $tempOutputFile,
+            $this->generatePhpScriptForLogWriting(
+                $stream,
+                $record,
+                $maxLevel,
+                $trigger,
+                $ignoredComponent,
+            ),
+        );
 
         $process = new Process([PHP_BINARY, $tempOutputFile]);
         $process->run();
@@ -447,8 +443,8 @@ final class StreamWriterTest extends Framework\TestCase
     public static function provideClassNames(): \Generator
     {
         yield 'constant' => [BackendUserAuthentication::class];
-        yield 'fqcn' => ['TYPO3\\CMS\\Core\\Authentication\\BackendUserAuthentication'];
-        yield 'simplySlashedClassName' => ['TYPO3\CMS\Core\Authentication\BackendUserAuthentication'];
+        yield 'fqcn' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
+        yield 'simplySlashedClassName' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
         yield 'fullyDottedClassName' => ['TYPO3.CMS.Core.Authentication.BackendUserAuthentication'];
     }
 }
