@@ -24,14 +24,13 @@ $EM_CONF[$_EXTKEY] = [
     'title' => 'TYPO3 Stream Writer',
     'description' => 'This extension adds the possibility to log to stdout and stderr.',
     'category' => 'misc',
-    'version' => '0.3.2',
+    'version' => '0.4.0',
     'state' => 'alpha',
-    'clearCacheOnLoad' => true,
     'author' => 'Martin Adler',
     'author_email' => 'mteu@mailbox.org',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-13.3.99',
+            'typo3' => '12.4.0-13.4.99',
             'php' => '8.1.0-8.3.99',
         ],
     ],
