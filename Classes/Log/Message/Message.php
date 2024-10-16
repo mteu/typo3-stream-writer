@@ -21,43 +21,18 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\ValueObjects;
+namespace mteu\StreamWriter\Log\Message;
 
-use mteu\StreamWriter as Src;
-use PHPUnit\Framework;
-use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * LogRecordMessageTest.
+ * LogOutput.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-#[Framework\Attributes\CoversClass(Src\ValueObjects\LogRecordMessage::class)]
-final class LogRecordMessageTest extends Framework\TestCase
+interface Message
 {
-    private LogRecord $logRecord;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->logRecord = new LogRecord(
-            'Foo/Bar',
-            LogLevel::WARNING,
-            'Foo',
-        );
-    }
-
-    #[Framework\Attributes\Test]
-    public function printLogRecordMessageMatchesDesiredFormat(): void
-    {
-        $logRecordMessage = LogRecordMessage::create($this->logRecord);
-
-        self::assertEquals(
-            '[WARNING] Foo/Bar: Foo' . PHP_EOL,
-            $logRecordMessage->print(),
-        );
-    }
+    public static function create(LogRecord $record): Message;
+    public function print(): string;
 }

@@ -21,7 +21,7 @@ declare(strict_types=1);
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace mteu\StreamWriter\ValueObjects;
+namespace mteu\StreamWriter\Log\Message;
 
 use mteu\StreamWriter\Config\ExceptionHandlers;
 use TYPO3\CMS\Core\Log\LogRecord;
