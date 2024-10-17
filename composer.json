@@ -82,7 +82,7 @@
 		"sca": [
 			"@sca:php"
 		],
-		"sca:php": "phpstan analyse -c phpstan.php",
+		"sca:php": "phpstan analyse -c phpstan.neon",
 		"test": [
 			"@test:unit"
 		],
