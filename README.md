@@ -38,7 +38,6 @@ use TYPO3\CMS\Core\Log\LogLevel;
 use mteu\StreamWriter\Config\StandardStream;
 use mteu\StreamWriter\Writer\StreamWriter;
 
-
 defined('TYPO3') or die();
 
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['writerConfiguration'] = [
