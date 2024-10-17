@@ -1,0 +1,22 @@
+parameters:
+	level: max
+	paths:
+		- Classes
+		- Configuration
+		- Tests
+
+	treatPhpDocTypesAsCertain: false
+
+	docblock:
+		copyrightIdentifier: 'Copyright (C) '
+		requiredLicenseIdentifier: 'GPL-3.0'
+
+	ergebnis:
+		noExtends:
+			classesAllowedToBeExtended:
+				- Exception
+				- TYPO3\CMS\Core\Log\Writer\AbstractWriter
+				- mteu\StreamWriter\Exception\Exception
+
+	ignoreErrors:
+		- '#^Interface must be located in "Contract" or "Contracts" namespace$#'
