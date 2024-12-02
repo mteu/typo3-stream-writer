@@ -1,0 +1,9 @@
+filesToModify:
+  - path: ext_emconf.php
+    patterns:
+      - "'version' => '{%version%}'"
+    reportUnmatched: true
+
+releaseOptions:
+  commitMessage: '[RELEASE] v{%version%}'
+  signTag: true
