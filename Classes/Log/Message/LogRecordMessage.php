@@ -31,12 +31,12 @@ use TYPO3\CMS\Core\Log\LogRecord;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class LogRecordMessage implements Message
+final readonly class LogRecordMessage implements Message
 {
     public function __construct(
-        private readonly string $level,
-        private readonly string $component,
-        private readonly string $message,
+        private string $level,
+        private string $component,
+        private string $message,
     ) {}
 
     public static function create(LogRecord $record): self

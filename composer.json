@@ -10,11 +10,11 @@
 		}
 	],
 	"require": {
-		"php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+		"php": "~8.2.0 || ~8.3.0 || ~8.4.0",
 		"typo3/cms-core": "~12.4.0 || ~13.4.0"
 	},
 	"require-dev": {
-		"armin/editorconfig-cli": "^1.8 || ^2.0",
+		"armin/editorconfig-cli": "^2.0",
 		"ergebnis/composer-normalize": "^2.43",
 		"friendsofphp/php-cs-fixer": "^3.60",
 		"mteu/docblock-rules": "^0.3",
@@ -27,7 +27,7 @@
 		"phpunit/phpunit": "^10.5",
 		"saschaegerer/phpstan-typo3": "^1.10",
 		"ssch/typo3-rector": "^2.6",
-		"symfony/process": "^6.4 || ^7.1",
+		"symfony/process": "^7.1",
 		"typo3/coding-standards": "^0.8.0",
 		"typo3/testing-framework": "^8.2"
 	},
