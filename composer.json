@@ -17,7 +17,7 @@
 		"armin/editorconfig-cli": "^2.0",
 		"ergebnis/composer-normalize": "^2.43",
 		"friendsofphp/php-cs-fixer": "^3.60",
-		"mteu/docblock-rules": "^0.3",
+		"mteu/docblock-rules": "^0.4",
 		"mteu/zealous-stan": "^0.6",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.12.6",
