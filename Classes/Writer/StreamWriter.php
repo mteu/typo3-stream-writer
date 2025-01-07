@@ -82,7 +82,7 @@ final class StreamWriter extends AbstractWriter
 
     /**
      * @param mixed[] $options
-     * @return class-string[]
+     * @return list<class-string>
      * @throws InvalidLogWriterConfigurationException
      */
     private function getIgnoredComponentsOption(array $options): array
@@ -183,6 +183,7 @@ final class StreamWriter extends AbstractWriter
 
     /**
      * @param mixed[] $options
+     * @throws InvalidLogWriterConfigurationException
      */
     private function determineMaximalLevel(array $options): LogLevel
     {
@@ -192,12 +193,19 @@ final class StreamWriter extends AbstractWriter
             return $default;
         }
 
-        return LogLevel::tryFrom($options['maxLevel']) ?? $default;
+        if (!is_int($options['maxLevel']) && !is_string($options['maxLevel'])) {
+            throw new InvalidLogWriterConfigurationException(
+                'LogWriter configuration of "maxLevel" must be int|string.',
+                1736263234,
+            );
+        }
+
+        return LogLevel::tryFrom((string) $options['maxLevel']) ?? $default;
     }
 
     private function levelIsWithinBounds(LogRecord $record): bool
     {
-        $logLevelPriority = LogLevel::tryFrom($record->getLevel())?->priority();
+        $logLevelPriority = LogLevel::tryFrom($record->getLevel())?->priority() ?? 0;
 
         return $logLevelPriority <= $this->maxLevel->priority();
     }
