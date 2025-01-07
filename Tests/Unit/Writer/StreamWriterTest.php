@@ -70,7 +70,7 @@ final class StreamWriterTest extends Framework\TestCase
     ): void {
 
         foreach (Src\Config\LogLevel::cases() as $potentialMaxLevel) {
-            $recordLevelPriority = Src\Config\LogLevel::tryFrom($record->getLevel())?->priority();
+            $recordLevelPriority = Src\Config\LogLevel::from($record->getLevel())->priority();
 
             match (true) {
                 // level is outside bounds
@@ -97,7 +97,7 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     /**
-     * @param string|class-string $className
+     * @param string $className Can be both string|class-string
      * @throws Src\Exception\InvalidLogWriterConfigurationException
      */
     #[Framework\Attributes\Test]
@@ -232,6 +232,19 @@ final class StreamWriterTest extends Framework\TestCase
         $this->createWriter([
             'outputStream' => Src\Config\StandardStream::Out,
             'ignoredComponents' => null,
+        ]);
+    }
+
+    #[Framework\Attributes\Test]
+    public function writeLogCreationThrowsExceptionUnsupportedMaxLevelType(): void
+    {
+        self::expectException(Src\Exception\InvalidLogWriterConfigurationException::class);
+        self::expectExceptionMessage(
+            'LogWriter configuration of "maxLevel" must be int|string.'
+        );
+        $this->createWriter([
+            'outputStream' => Src\Config\StandardStream::Out,
+            'maxLevel' => [LogLevel::ERROR],
         ]);
     }
 
@@ -438,7 +451,7 @@ final class StreamWriterTest extends Framework\TestCase
     }
 
     /**
-     * @return \Generator<string, array{string|class-string}>
+     * @return \Generator<string, string[]>
      */
     public static function provideClassNames(): \Generator
     {

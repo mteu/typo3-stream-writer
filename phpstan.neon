@@ -11,12 +11,14 @@ parameters:
 		copyrightIdentifier: 'Copyright (C) '
 		requiredLicenseIdentifier: 'GPL-3.0'
 
-	ergebnis:
-		noExtends:
-			classesAllowedToBeExtended:
-				- Exception
-				- TYPO3\CMS\Core\Log\Writer\AbstractWriter
-				- mteu\StreamWriter\Exception\Exception
+#	ergebnis:
+#		noExtends:
+#			classesAllowedToBeExtended:
+#				- Exception
+#				- TYPO3\CMS\Core\Log\Writer\AbstractWriter
+#				- mteu\StreamWriter\Exception\Exception
 
 	ignoreErrors:
-		- '#^Interface must be located in "Contract" or "Contracts" namespace$#'
+			-
+				identifier: encapsedStringPart.nonString
+				path: Tests/Unit/Writer/StreamWriterTest.php

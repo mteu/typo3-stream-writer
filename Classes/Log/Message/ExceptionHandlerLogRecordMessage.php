@@ -26,7 +26,7 @@ namespace mteu\StreamWriter\Log\Message;
 use TYPO3\CMS\Core\Log\LogRecord;
 
 /**
- * LogOutput.
+ * ExceptionHandlerLogRecordMessage.
  *
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
@@ -70,6 +70,17 @@ final readonly class ExceptionHandlerLogRecordMessage implements Message
 
     public static function create(LogRecord $record): self
     {
+        /**
+         * @var array{
+         *  mode: string,
+         *  application_mode: string,
+         *  exception_class: string,
+         *  exception_code: int,
+         *  file: string,
+         *  line: int,
+         *  message: string,
+         * } $recordData
+         */
         $recordData = $record->getData();
 
         return new self(
