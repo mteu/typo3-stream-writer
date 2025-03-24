@@ -566,16 +566,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "4.0.3",
+            "version": "4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "b115554301161fa21467629f1e1391c1936de517"
+                "reference": "d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/b115554301161fa21467629f1e1391c1936de517",
-                "reference": "b115554301161fa21467629f1e1391c1936de517",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa",
+                "reference": "d42c8731f0624ad6bdc8d3e5e9a4524f68801cfa",
                 "shasum": ""
             },
             "require": {
@@ -621,7 +621,7 @@
             ],
             "support": {
                 "issues": "https://github.com/egulias/EmailValidator/issues",
-                "source": "https://github.com/egulias/EmailValidator/tree/4.0.3"
+                "source": "https://github.com/egulias/EmailValidator/tree/4.0.4"
             },
             "funding": [
                 {
@@ -629,7 +629,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-27T00:36:43+00:00"
+            "time": "2025-03-06T22:45:56+00:00"
         },
         {
             "name": "enshrined/svg-sanitize",
@@ -4476,16 +4476,16 @@
         },
         {
             "name": "typo3/cms-core",
-            "version": "v13.4.5",
+            "version": "v13.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3-CMS/core.git",
-                "reference": "0873a2455a55c240b0f25b670fe18a96e5f87ebe"
+                "reference": "1fe6fc7fcd3f6797c3b1aa734c5a4b71d523a6b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3-CMS/core/zipball/0873a2455a55c240b0f25b670fe18a96e5f87ebe",
-                "reference": "0873a2455a55c240b0f25b670fe18a96e5f87ebe",
+                "url": "https://api.github.com/repos/TYPO3-CMS/core/zipball/1fe6fc7fcd3f6797c3b1aa734c5a4b71d523a6b8",
+                "reference": "1fe6fc7fcd3f6797c3b1aa734c5a4b71d523a6b8",
                 "shasum": ""
             },
             "require": {
@@ -4617,7 +4617,7 @@
                 "issues": "https://forge.typo3.org",
                 "source": "https://github.com/typo3/typo3"
             },
-            "time": "2025-02-11T08:52:03+00:00"
+            "time": "2025-03-18T14:13:14+00:00"
         },
         {
             "name": "typo3/html-sanitizer",
@@ -6079,120 +6079,6 @@
             "time": "2025-03-19T23:42:16+00:00"
         },
         {
-            "name": "icecave/parity",
-            "version": "3.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/icecave/parity.git",
-                "reference": "4fe835483e0f89f0f96763c47cb9fdca26c24bdc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/icecave/parity/zipball/4fe835483e0f89f0f96763c47cb9fdca26c24bdc",
-                "reference": "4fe835483e0f89f0f96763c47cb9fdca26c24bdc",
-                "shasum": ""
-            },
-            "require": {
-                "icecave/repr": "^4",
-                "php": ">=7.3"
-            },
-            "require-dev": {
-                "eloquent/liberator": "^2",
-                "eloquent/phony": "^5",
-                "eloquent/phony-phpunit": "^7",
-                "friendsofphp/php-cs-fixer": "^2",
-                "phpunit/phpunit": "^9"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Icecave\\Parity\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Harris",
-                    "email": "mailjamesharris@gmail.com",
-                    "homepage": "https://github.com/jmalloc"
-                }
-            ],
-            "description": "A customizable deep comparison library.",
-            "homepage": "https://github.com/icecave/parity",
-            "keywords": [
-                "compare",
-                "comparison",
-                "equal",
-                "equality",
-                "greater",
-                "less",
-                "sort",
-                "sorting"
-            ],
-            "support": {
-                "issues": "https://github.com/icecave/parity/issues",
-                "source": "https://github.com/icecave/parity/tree/3.0.1"
-            },
-            "time": "2021-02-04T05:51:24+00:00"
-        },
-        {
-            "name": "icecave/repr",
-            "version": "4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/icecave/repr.git",
-                "reference": "3dad35ee43394404ae0f1926d754e7b7820da8e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/icecave/repr/zipball/3dad35ee43394404ae0f1926d754e7b7820da8e4",
-                "reference": "3dad35ee43394404ae0f1926d754e7b7820da8e4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "require-dev": {
-                "eloquent/phony-phpunit": "^6",
-                "friendsofphp/php-cs-fixer": "^2",
-                "phpunit/phpunit": "^8"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Icecave\\Repr\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Harris",
-                    "email": "mailjamesharris@gmail.com",
-                    "homepage": "https://github.com/jmalloc"
-                }
-            ],
-            "description": "A library for generating string representations of any value, inspired by Python's reprlib library.",
-            "homepage": "https://github.com/icecave/repr",
-            "keywords": [
-                "human",
-                "readable",
-                "repr",
-                "representation",
-                "string"
-            ],
-            "support": {
-                "issues": "https://github.com/icecave/repr/issues",
-                "source": "https://github.com/icecave/repr/tree/4.0.0"
-            },
-            "time": "2020-08-25T02:05:11+00:00"
-        },
-        {
             "name": "idiosyncratic/editorconfig",
             "version": "0.1.3",
             "source": {
@@ -6243,21 +6129,20 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "6.2.1",
+            "version": "6.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jsonrainbow/json-schema.git",
-                "reference": "dff04e3c7c11451a6b4e30709e17c44526ebff73"
+                "reference": "c9f00dec766a67bf82c277b71d71d254357db92c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/dff04e3c7c11451a6b4e30709e17c44526ebff73",
-                "reference": "dff04e3c7c11451a6b4e30709e17c44526ebff73",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/c9f00dec766a67bf82c277b71d71d254357db92c",
+                "reference": "c9f00dec766a67bf82c277b71d71d254357db92c",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "icecave/parity": "^3.0",
                 "marc-mabe/php-enum": "^4.0",
                 "php": "^7.2 || ^8.0"
             },
@@ -6313,9 +6198,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jsonrainbow/json-schema/issues",
-                "source": "https://github.com/jsonrainbow/json-schema/tree/6.2.1"
+                "source": "https://github.com/jsonrainbow/json-schema/tree/6.3.1"
             },
-            "time": "2025-03-06T21:27:10+00:00"
+            "time": "2025-03-18T19:03:56+00:00"
         },
         {
             "name": "league/flysystem",
@@ -10392,23 +10277,23 @@
         },
         {
             "name": "typo3/cms-backend",
-            "version": "v13.4.5",
+            "version": "v13.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3-CMS/backend.git",
-                "reference": "9ae68b041483a5086a3abf8df41ae527664500f8"
+                "reference": "5ef527a6868bed9a5f044b001df7eaac249408d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3-CMS/backend/zipball/9ae68b041483a5086a3abf8df41ae527664500f8",
-                "reference": "9ae68b041483a5086a3abf8df41ae527664500f8",
+                "url": "https://api.github.com/repos/TYPO3-CMS/backend/zipball/5ef527a6868bed9a5f044b001df7eaac249408d3",
+                "reference": "5ef527a6868bed9a5f044b001df7eaac249408d3",
                 "shasum": ""
             },
             "require": {
                 "ext-intl": "*",
                 "ext-libxml": "*",
                 "psr/event-dispatcher": "^1.0",
-                "typo3/cms-core": "13.4.5"
+                "typo3/cms-core": "13.4.8"
             },
             "conflict": {
                 "typo3/cms": "*"
@@ -10470,20 +10355,20 @@
                 "issues": "https://forge.typo3.org",
                 "source": "https://github.com/typo3/typo3"
             },
-            "time": "2025-02-11T08:52:03+00:00"
+            "time": "2025-03-18T14:13:14+00:00"
         },
         {
             "name": "typo3/cms-extbase",
-            "version": "v13.4.5",
+            "version": "v13.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3-CMS/extbase.git",
-                "reference": "13d8507ef6817618739c08a8bf302e300a644e3d"
+                "reference": "13151441c863cf51dd67a0c9ef50a28dea3729b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3-CMS/extbase/zipball/13d8507ef6817618739c08a8bf302e300a644e3d",
-                "reference": "13d8507ef6817618739c08a8bf302e300a644e3d",
+                "url": "https://api.github.com/repos/TYPO3-CMS/extbase/zipball/13151441c863cf51dd67a0c9ef50a28dea3729b7",
+                "reference": "13151441c863cf51dd67a0c9ef50a28dea3729b7",
                 "shasum": ""
             },
             "require": {
@@ -10493,7 +10378,7 @@
                 "symfony/dependency-injection": "^7.1.4",
                 "symfony/property-access": "^7.1.4",
                 "symfony/property-info": "^7.1.3",
-                "typo3/cms-core": "13.4.5"
+                "typo3/cms-core": "13.4.8"
             },
             "conflict": {
                 "typo3/cms": "*"
@@ -10540,26 +10425,26 @@
                 "issues": "https://forge.typo3.org",
                 "source": "https://github.com/typo3/typo3"
             },
-            "time": "2025-02-11T08:52:03+00:00"
+            "time": "2025-03-18T14:13:14+00:00"
         },
         {
             "name": "typo3/cms-fluid",
-            "version": "v13.4.5",
+            "version": "v13.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3-CMS/fluid.git",
-                "reference": "941ccbe68efd5816224746815f8d3d49e418a5cf"
+                "reference": "d7ebcb1ea68c479acfea01178ede1b1f3c55a440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3-CMS/fluid/zipball/941ccbe68efd5816224746815f8d3d49e418a5cf",
-                "reference": "941ccbe68efd5816224746815f8d3d49e418a5cf",
+                "url": "https://api.github.com/repos/TYPO3-CMS/fluid/zipball/d7ebcb1ea68c479acfea01178ede1b1f3c55a440",
+                "reference": "d7ebcb1ea68c479acfea01178ede1b1f3c55a440",
                 "shasum": ""
             },
             "require": {
                 "symfony/dependency-injection": "^7.1.4",
-                "typo3/cms-core": "13.4.5",
-                "typo3/cms-extbase": "13.4.5",
+                "typo3/cms-core": "13.4.8",
+                "typo3/cms-extbase": "13.4.8",
                 "typo3fluid/fluid": "^4.0.2"
             },
             "conflict": {
@@ -10604,25 +10489,25 @@
                 "issues": "https://forge.typo3.org",
                 "source": "https://github.com/typo3/typo3"
             },
-            "time": "2025-02-11T08:52:03+00:00"
+            "time": "2025-03-18T14:13:14+00:00"
         },
         {
             "name": "typo3/cms-frontend",
-            "version": "v13.4.5",
+            "version": "v13.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3-CMS/frontend.git",
-                "reference": "27935ce770e6d73a2e96bb2426e0afb887268348"
+                "reference": "2cdc3c63417587a1515b304ec075db783abf774d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3-CMS/frontend/zipball/27935ce770e6d73a2e96bb2426e0afb887268348",
-                "reference": "27935ce770e6d73a2e96bb2426e0afb887268348",
+                "url": "https://api.github.com/repos/TYPO3-CMS/frontend/zipball/2cdc3c63417587a1515b304ec075db783abf774d",
+                "reference": "2cdc3c63417587a1515b304ec075db783abf774d",
                 "shasum": ""
             },
             "require": {
                 "ext-libxml": "*",
-                "typo3/cms-core": "13.4.5"
+                "typo3/cms-core": "13.4.8"
             },
             "conflict": {
                 "typo3/cms": "*"
@@ -10674,7 +10559,7 @@
                 "issues": "https://forge.typo3.org",
                 "source": "https://github.com/typo3/typo3"
             },
-            "time": "2025-02-11T08:52:03+00:00"
+            "time": "2025-03-18T14:13:14+00:00"
         },
         {
             "name": "typo3/coding-standards",
