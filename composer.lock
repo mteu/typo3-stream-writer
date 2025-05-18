@@ -9680,16 +9680,16 @@
         },
         {
             "name": "ssch/typo3-rector",
-            "version": "v3.2.0",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sabbelasichon/typo3-rector.git",
-                "reference": "732d33122055a013bd96d34f6470d748c42f4b77"
+                "reference": "dfcd71519dae730cba7431ff05a8004703adb7d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sabbelasichon/typo3-rector/zipball/732d33122055a013bd96d34f6470d748c42f4b77",
-                "reference": "732d33122055a013bd96d34f6470d748c42f4b77",
+                "url": "https://api.github.com/repos/sabbelasichon/typo3-rector/zipball/dfcd71519dae730cba7431ff05a8004703adb7d6",
+                "reference": "dfcd71519dae730cba7431ff05a8004703adb7d6",
                 "shasum": ""
             },
             "require": {
@@ -9792,7 +9792,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-14T22:34:58+00:00"
+            "time": "2025-05-18T16:11:53+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
