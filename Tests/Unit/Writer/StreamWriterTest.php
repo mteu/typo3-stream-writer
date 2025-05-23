@@ -457,7 +457,6 @@ final class StreamWriterTest extends Framework\TestCase
     {
         yield 'constant' => [BackendUserAuthentication::class];
         yield 'fqcn' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
-        yield 'simplySlashedClassName' => [\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class];
         yield 'fullyDottedClassName' => ['TYPO3.CMS.Core.Authentication.BackendUserAuthentication'];
     }
 }
