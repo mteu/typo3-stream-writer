@@ -24,7 +24,7 @@
 		"phpstan/phpstan-deprecation-rules": "^2.0",
 		"phpstan/phpstan-phpunit": "^2.0",
 		"phpstan/phpstan-strict-rules": "^2.0",
-		"phpunit/php-code-coverage": "^10.1",
+		"phpunit/php-code-coverage": "^12.0",
 		"phpunit/phpcov": "^9.0",
 		"phpunit/phpunit": "^10.5",
 		"shipmonk/phpstan-rules": "^4.1",
