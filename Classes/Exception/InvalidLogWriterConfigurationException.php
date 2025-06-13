@@ -29,14 +29,4 @@ namespace mteu\StreamWriter\Exception;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class InvalidLogWriterConfigurationException extends Exception
-{
-    public function __construct(
-        ?string $message,
-        int $code,
-        ?\Throwable $previous = null,
-    )
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}
+final class InvalidLogWriterConfigurationException extends Exception {}
