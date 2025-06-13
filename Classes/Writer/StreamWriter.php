@@ -39,7 +39,7 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class StreamWriter extends AbstractWriter
+final class StreamWriter extends AbstractWriter implements StreamWriterInterface
 {
     /**
      * @var class-string[]
@@ -199,7 +199,7 @@ final class StreamWriter extends AbstractWriter
             );
         }
 
-        return LogLevel::tryFrom((string) $options['maxLevel']) ?? $default;
+        return LogLevel::tryFrom((string)$options['maxLevel']) ?? $default;
     }
 
     private function levelIsWithinBounds(LogRecord $record): bool

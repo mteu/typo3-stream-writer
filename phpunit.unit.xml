@@ -36,5 +36,8 @@
     <include>
       <directory suffix=".php">Classes</directory>
     </include>
+    <exclude>
+      <directory>.build</directory>
+    </exclude>
   </source>
 </phpunit>
