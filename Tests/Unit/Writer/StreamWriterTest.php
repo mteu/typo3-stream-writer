@@ -45,7 +45,6 @@ final class StreamWriterTest extends Framework\TestCase
     public function writeLogCreationSucceedsWithEmptyConfiguration(): void
     {
         $subject = $this->createWriter();
-        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
         self::assertInstanceOf(Src\Writer\StreamWriter::class, $subject);
     }
 
@@ -53,7 +52,6 @@ final class StreamWriterTest extends Framework\TestCase
     public function writeLogCreationSucceedsWithProperlyConfiguredOutputStream(): void
     {
         foreach (Src\Config\StandardStream::cases() as $standardStream) {
-            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             self::assertInstanceOf(
                 Src\Writer\StreamWriter::class,
                 $this->createWriter(['outputStream' => $standardStream])
@@ -408,10 +406,10 @@ final class StreamWriterTest extends Framework\TestCase
 
     /**
      * @param mixed[] $options
-     * @return Src\Writer\StreamWriter
+     * @return Src\Writer\StreamWriterInterface
      * @throws Src\Exception\InvalidLogWriterConfigurationException
      */
-    private function createWriter(array $options = []): Src\Writer\StreamWriter
+    private function createWriter(array $options = []): Src\Writer\StreamWriterInterface
     {
         if ($options === []) {
             return new Src\Writer\StreamWriter();
