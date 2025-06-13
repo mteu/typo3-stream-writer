@@ -39,7 +39,7 @@ use TYPO3\CMS\Core\Log\Writer\WriterInterface;
  * @author Martin Adler <mteu@mailbox.org>
  * @license GPL-3.0-or-later
  */
-final class StreamWriter extends AbstractWriter
+final class StreamWriter extends AbstractWriter implements StreamWriterInterface
 {
     /**
      * @var class-string[]
