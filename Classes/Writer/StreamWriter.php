@@ -168,11 +168,10 @@ final class StreamWriter extends AbstractWriter
 
     private function writeToResource(Message $message): void
     {
-        $resource = fopen($this->outputStream->value, 'w');
-
-        if ($resource === false) {
-            throw new \RuntimeException('Unable to write to ' . $this->outputStream->value . '.', 1722331957);
-        }
+        $resource = match ($this->outputStream) {
+            StandardStream::Out => STDOUT,
+            StandardStream::Error => STDERR,
+        };
 
         $output = fwrite($resource, $message->print());
 
