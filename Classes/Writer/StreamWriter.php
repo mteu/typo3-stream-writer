@@ -199,7 +199,7 @@ final class StreamWriter extends AbstractWriter
             );
         }
 
-        return LogLevel::tryFrom((string) $options['maxLevel']) ?? $default;
+        return LogLevel::tryFrom((string)$options['maxLevel']) ?? $default;
     }
 
     private function levelIsWithinBounds(LogRecord $record): bool
