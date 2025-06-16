@@ -9709,16 +9709,16 @@
         },
         {
             "name": "ssch/typo3-rector",
-            "version": "v3.4.3",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sabbelasichon/typo3-rector.git",
-                "reference": "f5ce5a4b396ffbd1aa82513f5f1a55c7d1a19579"
+                "reference": "b173bdce41dd9abd7d237739157629088a3aa69a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sabbelasichon/typo3-rector/zipball/f5ce5a4b396ffbd1aa82513f5f1a55c7d1a19579",
-                "reference": "f5ce5a4b396ffbd1aa82513f5f1a55c7d1a19579",
+                "url": "https://api.github.com/repos/sabbelasichon/typo3-rector/zipball/b173bdce41dd9abd7d237739157629088a3aa69a",
+                "reference": "b173bdce41dd9abd7d237739157629088a3aa69a",
                 "shasum": ""
             },
             "require": {
@@ -9821,7 +9821,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-06-08T17:02:22+00:00"
+            "time": "2025-06-16T13:57:58+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
