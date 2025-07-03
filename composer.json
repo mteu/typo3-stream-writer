@@ -15,7 +15,7 @@
 	},
 	"require-dev": {
 		"armin/editorconfig-cli": "^2.0",
-		"eliashaeussler/version-bumper": "^2.0",
+		"eliashaeussler/version-bumper": "^3.0",
 		"ergebnis/composer-normalize": "^2.43",
 		"friendsofphp/php-cs-fixer": "^3.60",
 		"mteu/docblock-rules": "^0.4",
