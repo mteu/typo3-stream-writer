@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer install:*)",
+      "Bash(composer test:*)",
+      "Bash(grep:*)",
+      "Bash(chmod:*)"
+    ],
+    "deny": []
+  }
+}
