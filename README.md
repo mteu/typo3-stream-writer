@@ -12,9 +12,7 @@
 </div>
 
 > [!CAUTION]
-> Don't rely on this package in production. Active maintenance will be discontinued.
-> This extension might be marked `abandoned` in favor of a more coherent approach. It's likely but not at all
-> guaranteed that future development will keep backwards compatibility with v0.5.x.
+> This package is abandoned. Active maintenance is discontinued.
 <hr />
 
 This TYPO3 CMS extensions adds a custom `LogWriter` to the TYPO3 Logging Framework allowing the CMS to log messages to
